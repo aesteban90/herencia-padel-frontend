@@ -1,0 +1,211 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #454545 !important;
+  background-color: white;
+}
+
+:root {
+   --bg: #242526;
+   --bg-accent: #484a4d;
+   --text-color: #dadce1;
+   --nav-size: 60px;
+   --border: 1px solid #474a4d;
+   --border-radius: 8px;
+   --speed: 500ms;
+}
+
+.sub-nav{
+  display: none;
+}
+
+.hours-selected-container{
+  display: flex;
+  flex-wrap: wrap;
+}
+.hours-selected-item{
+  display: block;
+  position: relative;
+  width: 45px;
+  height: 36px;
+  margin: 2px;
+}
+.hours-selected-item span{
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    border: 1px solid;
+    border-radius: 5px;
+    text-align: center;
+    padding: 5px 8px;
+    cursor: pointer;
+    color: #585c68;
+    display: block;
+    position: relative;
+}
+.hours-selected-item input{
+  position: absolute;
+  top: -4px;
+  /* right: 0; */
+  left: 20px;
+  width: 45px;
+  height: 34px;
+  z-index: 1;
+  opacity: 0;
+  cursor: pointer;
+} 
+
+.hours-selected-item input:checked ~ span{
+  background-color: #303641;
+  color: #fff;
+}
+
+.hours-selected-item-info{
+  font-size: 12px;
+  width: 35px;
+  height: 25px;
+  background: #303641;
+  border: 1px solid;
+  border-radius: 5px;
+  text-align: center;
+  padding: 1px 2px;
+  color: #fff;
+  display: block;
+  position: relative;
+  margin: 1px;
+}
+
+.react-datepicker-popper{
+  z-index: 2;
+}
+
+.list-reservas{
+  font-size: 12px;
+}
+.list-reservas li{
+  border-left-color: #303641;
+  border-left: 3px solid;
+}
+.nav-tabs .nav-item{
+  background-color: #303641 ;
+  color: #fff;
+  width: 200px;
+}
+.nav-tabs .nav-item.active{
+  background-color: #576276 ;
+  color: #fff;
+}
+.details-consumision-tabs{
+  text-align: right;
+  font-weight: 600;
+}
+.details-consumision-tabs span{
+  width: 100px;
+  display: inline-block;
+  font-weight: normal;
+}
+.details-consumision, .details-pagos{
+  text-align: right;
+  font-size: 13px;
+  font-weight: 600;
+}
+.details-consumision span{
+  width: 80px;
+  display: inline-block;
+  font-weight: normal;
+}
+.details-pagos span{
+  width: 80px;
+  display: inline-block;
+  font-weight: normal;
+}
+.list-group .list-group-item {
+  display: flex;
+  flex-wrap: wrap;
+  padding: .75rem 0 ;
+}
+.list-group-item-roles{
+  display: flex;
+  flex-wrap: nowrap;
+  padding: .75rem 1rem ;
+}
+
+.nav-wrapper-top {
+  flex-direction: unset !important;
+  max-width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: flex-end;
+  padding-left: 0;
+  margin-bottom: 0;
+  list-style: none;
+}
+.navigation-top{
+  position: absolute;
+  width: 100%;
+}
+.nav-wrapper-top-item {
+  /* width: calc(var(--nav-size) * 0.8); */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.icon-button {
+  --button-size: calc(var(var(--nav-size) * 0.5));
+  /* width: 40px; */
+  height: 40px;
+  /* background-color: #484a4d; */
+  /* background-color: #303641; */
+  color: #303641;
+  border-radius: 50%;
+  padding: 5px;
+  margin: 2px;
+  margin-right: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: filter 300ms;
+}
+.icon-button svg{
+  margin: 5px;
+}
+
+.validation-error{
+  color: #E0A800;
+}
+
+.content-wrapper .tabsDetalles a{
+  border: 1px solid white;
+}
+.subtotales{
+  border-top: 1.5px solid #303641;
+}
+.factura_cabecera_direcciones{
+  font-size: 11px;
+}
+.factura_cabecera{
+  /* margin-bottom: -70px; */
+  font-size: 11px;
+  padding-top: 8px;
+  padding-bottom: 18px;
+  height: 120px;
+}
+/* Solid border */
+hr.solid {
+  border-top: 3px solid #bbb;
+}
+.list-group-no-pagination {
+  display: flex;
+  flex-direction: column;
+  padding-left: 0; 
+  margin-bottom: 0;  
+}
+.list-group-no-pagination .list-group-item {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0.75rem 0;
+}

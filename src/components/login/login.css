@@ -1,0 +1,7 @@
+#login, .card-body{
+    background-color: #303641 ;
+    color: rgb(223, 223, 223)
+}
+#login {
+    height: 100vh;
+}
