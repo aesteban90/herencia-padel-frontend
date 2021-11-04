@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import axios from 'axios';
 import Select from 'react-select';
 import NumberFormat from 'react-number-format';
+import DatePicker from 'react-datepicker';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { usuarioLogueado } from '../../../App.js';
@@ -13,6 +14,7 @@ export default class ComprasForm extends Component{
         super(props);
         this.state = {  
             numerofactura: '',
+            fechaCompra: new Date(),
             inventarioSelected: {},
             inventarioOptions: [],
             proveedorSelected: {},
@@ -90,7 +92,7 @@ export default class ComprasForm extends Component{
             }
         }).catch(err => console.log(err))        
     }
-
+    onChangeFechaCompra = (date) => {this.setState({fechaCompra: date})}    
     onChangeNumeroFactura = (e) => {this.setState({numerofactura: e.target.value})}
     onChangeTotal = (e) => {this.setState({total: e.target.value})}
     onChangeInventario = (selectedOption) => {this.setState({inventarioSelected: selectedOption})}
@@ -203,6 +205,19 @@ export default class ComprasForm extends Component{
                                     options={this.state.proveedorOptions} 
                                     onChange={this.onChangeProveedor}                                    
                                     required/>
+                            </div>
+                            <div className="form-group col-md-12">
+                                <label>Fecha Compra: </label>
+                                    <DatePicker     
+                                        className="form-control" 
+                                        locale="esp"
+                                        required
+                                        dateFormat="dd/MM/yyyy"
+                                        selected={this.state.fechaCompra}
+                                        onChange={this.onChangeFechaCompra}
+                                        showYearDropdown
+                                        isClearable
+                                    />    
                             </div>
                             <div className="form-group col-md-4">
                                 <label>Cantidad: </label>

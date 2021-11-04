@@ -198,11 +198,12 @@ body {
 hr.solid {
   border-top: 3px solid #bbb;
 }
-.list-group-no-pagination {
+.list-group-item-nofilter {
   display: flex;
   flex-direction: column;
   padding-left: 0; 
   margin-bottom: 0;  
+  padding: 0.75rem 0;
 }
 .list-group-no-pagination .list-group-item {
   display: flex;

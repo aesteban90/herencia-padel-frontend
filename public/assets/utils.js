@@ -25,11 +25,20 @@ function addEventSearch(){
                 $(".list-group-item").filter(function() {
                     $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
                 });
-                $(".pagination").css('display','none');
+                $(".pagination").css('display','none');                
             }
         } else {
             $('.nav-pagination').remove();
-            paginar("list-group","list-group-item");
+            if($('ul.no-pagination').length === 0 ){
+                paginar("list-group","list-group-item");
+            }else{
+                $('.list-group-item').show()
+            }
+        }
+
+        //Verifica si es de la seccion de pagos
+        if($(this).attr('class').includes('seccion-pagos')){
+            calcularTotalesPagos();
         }
     });
 }
@@ -66,4 +75,24 @@ function paginar(classUL,classList,refresh){
             pageNumbers: true
         });
     }
+}
+function convertMiles(nStr) {
+    nStr += '';
+    var x = nStr.split('.');
+    var x1 = x[0];
+    var rgx = /(\d+)(\d{3})/;
+    while (rgx.test(x1)) {
+            x1 = x1.replace(rgx, '$1.$2');
+    }
+    
+    return ( x1 === 'null' ? '' : x1);
+}
+
+function calcularTotalesPagos(){
+    let totales = 0;
+    $.each($('#list-pagos .list-group-item:visible #item-total'), function(key, element) {
+        totales += parseInt($(element).html().replace(/\./gi,''));                                                
+    }); 
+    $('.list-totales-pagos').html(convertMiles(totales) + " Gs.")                    
+    
 }

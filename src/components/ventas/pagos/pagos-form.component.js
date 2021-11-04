@@ -5,8 +5,9 @@ import NumberFormat from 'react-number-format';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { usuarioLogueado } from '../../../App';
+import { parse } from '@fortawesome/fontawesome-svg-core';
 const configData = require('../../../config.json');
-const {convertMiles} = require('../../../utils/utils')
+const { convertMiles } = require('../../../utils/utils')
 
 export default class PagosForm extends Component{
     constructor(props){
@@ -16,6 +17,7 @@ export default class PagosForm extends Component{
             precioUnitario:'',
             precioTotal: '',
             cantidad: '',
+            saldo:'',
             consumisionSelected: {},
             consumisionOptions: [],
             user_created: usuarioLogueado.name,
@@ -37,17 +39,19 @@ export default class PagosForm extends Component{
         }
 
         //Obteniendo datos de la consumision para editar o crear
-        if(this.state.idUpdate !== this.props.idUpdate ){
+        if(this.state.idUpdate !== this.props.idUpdate ){            
             this.setState({ idUpdate: this.props.idUpdate});
             if(this.props.idUpdate !== "NEW" && this.props.idUpdate !== "" ){
                 axios.get(configData.serverUrl + "/pagos/"+this.props.idUpdate)
                 .then(response => {
-                    const consumision = response.data;
+                    const pagos = response.data;
+                    console.log('Editando',pagos)
                     this.setState({
-                        precioUnitario: consumision.precio_unitario,
-                        precioTotal: consumision.precio_total,
-                        cantidad: consumision.cantidad,
-                        consumisionSelected: {value:'',label: consumision.producto.descripcion},
+                        precioUnitario: pagos.precio_unitario,
+                        precioTotal: pagos.precio_total,
+                        pagado_por: pagos.pagado_por,
+                        cantidad: pagos.cantidad,
+                        consumisionSelected: this.state.consumisionOptions.filter(el => el.value._id === response.data.consumision._id),
                         codigo: response.data.codigo,
                         textButton:'Editar',
                         titleForm: 'Editar Pagos' 
@@ -69,25 +73,47 @@ export default class PagosForm extends Component{
     }
 
     getConsumisionOptions = () => {
-        if(this.props.reserva._id){
+        if(this.props.reserva._id){            
             axios.get(configData.serverUrl + "/consumisiones/reserva/"+this.props.reserva._id)
             .then(response => {
                 let options = [];
                 if(response.data.length > 0 ){
                     response.data.forEach(element => {
-                        if(element.producto){
-                            options.push({value:element,label:element.producto.descripcion});
-                        }else if(element.cancha){
-                            options.push({value:element,label:element.cancha.descripcion});
+                        let total_pagado = 0;
+                        this.props.statePagoslist.datos.map(data => {
+                            if(data.consumision._id === element._id){
+                                total_pagado += parseInt(data.precio_total.replace(/\./gi,''))
+                            }
+                        })
+                        element.saldo = parseInt(element.precio_total.replace(/\./gi,'')) - total_pagado;
+                        console.log('saldo',element.saldo)
+                        //Si el saldo de la consumision es 0, no se visualiza para el pago                        
+                        if(element.saldo > 0 ){
+                            if(element.producto){
+                                options.push({value:element,label:element.producto.descripcion});
+                            }else if(element.cancha){
+                                options.push({value:element,label:element.cancha.descripcion});
+                            }
                         }
-                    });
-                    this.setState({
-                        consumisionSelected: options[0],
-                        precioUnitario: options[0].value.precio_unitario,
-                        precioTotal: options[0].value.precio_total.replace(/\./gi,''),
-                        cantidad: options[0].value.cantidad,
-                        consumisionOptions: options,                
-                    },() => this.controlarBotones());
+                    });  
+
+                    //Controla que tenga consumision                  
+                    if(options.length > 0 ){
+                        this.setState({
+                            consumisionSelected: options[0],
+                            saldo: convertMiles(options[0].value.saldo),
+                            precioUnitario: options[0].value.precio_unitario,
+                            precioTotal: options[0].value.precio_total.replace(/\./gi,''),
+                            cantidad: options[0].value.cantidad,
+                            consumisionOptions: options,                
+                        },() => this.controlarBotones());
+                    }else{
+                        this.setState({
+                            consumisionSelected: {},
+                            consumisionOptions: [],
+                            saldo: ''
+                        })
+                    }
                 }else{
                     this.setState({
                         consumisionSelected: {},
@@ -116,9 +142,11 @@ export default class PagosForm extends Component{
         this.getConsumisionOptions();
     }
     onChangeProducto = (selectedOption) => {
+        
         let precioUnitario = (selectedOption.value.precio_unitario !== undefined ? selectedOption.value.precio_unitario : '0')
         this.setState({
             consumisionSelected: selectedOption,
+            saldo: convertMiles(selectedOption.value.saldo),
             cantidad: selectedOption.value.cantidad,
             precioUnitario: precioUnitario,
             precioTotal: parseInt(precioUnitario.replace(/\./gi,'')) * selectedOption.value.cantidad
@@ -135,21 +163,27 @@ export default class PagosForm extends Component{
             cantidad: e.target.value,
             precioTotal: parseInt(this.state.precioUnitario.replace(/\./gi,'')) * e.target.value
         })}
-    
+    showMessage(message){
+        console.log('show message',message);
+        document.querySelector('#alert-pagos').classList.replace('hide','show');
+        document.querySelector('#alert-pagos').classList.replace('alert-success','alert-warning');
+        document.querySelector('#alert-pagos #text').innerHTML = message;
+        setTimeout(function(){  document.querySelector('#alert-pagos').classList.replace('show','hide'); }, 3000);
+    }
     showNotification(isSuccess){
-        document.querySelector('#alert').classList.replace('hide','show');
+        document.querySelector('#alert-pagos').classList.replace('hide','show');
         if(isSuccess === true){
-            document.querySelector('#alert').classList.replace('alert-warning','alert-success');
-            document.querySelector('#alert #text').innerHTML = '<strong>Exito!</strong> Los datos han sido actualizados.'
+            document.querySelector('#alert-pagos').classList.replace('alert-warning','alert-success');
+            document.querySelector('#alert-pagos #text').innerHTML = '<strong>Exito!</strong> Los datos han sido actualizados.'
         }else{
-            document.querySelector('#alert').classList.replace('alert-success','alert-warning');
-            document.querySelector('#alert #text').innerHTML = '<strong>Error!</strong> Contacte con el administrador.'
+            document.querySelector('#alert-pagos').classList.replace('alert-success','alert-warning');
+            document.querySelector('#alert-pagos #text').innerHTML = '<strong>Error!</strong> Contacte con el administrador.'
         }
         //Enfocar el input
         this._input.focus(); 
         //actualizar Lista
         this.props.onUpdateParentList('true');
-        setTimeout(function(){  document.querySelector('#alert').classList.replace('show','hide'); }, 3000);
+        setTimeout(function(){  document.querySelector('#alert-pagos').classList.replace('show','hide'); }, 3000);
     }
 
     handleCloseAlert = () =>{
@@ -158,6 +192,18 @@ export default class PagosForm extends Component{
     
     onSubtmit = (e) => {
         e.preventDefault();
+        let saldo = parseInt(this.state.saldo.replace(/\./gi,''));
+        let precioTotal = parseInt(this.state.precioTotal);
+        if(precioTotal > saldo){
+            try {
+                this.showMessage("El Precio Total no puede superar el saldo de " + this.state.saldo + " Gs.");
+            } catch (error) {
+                console.log(error);
+            }
+            
+            return false;
+        }
+
         if(this.props.idUpdate === "NEW" || this.props.idUpdate === "" ){
             const pagos = {
                 reserva: this.state.reserva._id,
@@ -221,7 +267,7 @@ export default class PagosForm extends Component{
                                     value={this.state.pagado_por}
                                     onChange={this.onChangePagadoPor}
                                 />
-                            </div>   
+                            </div>                               
                             <div className="form-group col-md-3">
                                 <label>Cantidad: </label>
                                 <NumberFormat 
@@ -248,6 +294,15 @@ export default class PagosForm extends Component{
                                 />
                             </div>
                             <div className="form-group col-md-12">
+                                <label style={{color:'red'}}>Saldo: </label>
+                                <input type="text" 
+                                    disabled
+                                    style={{borderColor:'red', color:'red'}}
+                                    className="form-control"
+                                    value={this.state.saldo}
+                                />
+                            </div>  
+                            <div className="form-group col-md-12">
                                 <label>Precio Total: </label>
                                 <NumberFormat 
                                     thousandSeparator = "."
@@ -262,7 +317,7 @@ export default class PagosForm extends Component{
                     <div className="form-group">
                         <button type="submit" className="btn btn-warning"><FontAwesomeIcon icon={faArrowLeft}/> {this.state.textButton}</button>
                     </div>        
-                    <div id="alert" className="alert alert-success alert-dismissible fade hide" role="alert">
+                    <div id="alert-pagos" className="alert alert-success alert-dismissible fade hide" role="alert">
                         <span id="text"></span>
                         <button type="button" className="close" onClick={this.handleCloseAlert}>
                             <span aria-hidden="true">&times;</span>

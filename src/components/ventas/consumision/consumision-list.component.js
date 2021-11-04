@@ -41,17 +41,16 @@ export default class ConsumisionList extends Component{
             })
             element.saldo = convertMiles(pagos_details.total_pagado - parseInt(element.precio_total.replace(/\./gi,'')));
             element.total_pagado = convertMiles(pagos_details.total_pagado);
-            element.total_pagado_cantidad = convertMiles(pagos_details.total_pagado_cantidad);            
+            element.total_pagado_cantidad = convertMiles(pagos_details.total_pagado_cantidad);                            
         })
         this.setState({
             reserva: this.props.reserva,
             datos: consumisiones,
             loading: false
         })
-        //Pagina la lista
-        //window.paginar('list-group','list-group-item',true);
+       
         //Actualizando los montos de la reverva en el detalle padre
-        this.props.updateDetallesMontos();
+        this.props.updateDetallesMontos(consumisiones);
     }
 
     componentDidUpdate(){
@@ -124,7 +123,7 @@ export default class ConsumisionList extends Component{
                             </div>
                         </div>
                         <input className="form-control inputsearch" type="text" placeholder="Busqueda (minimo 3 letras)..." />
-                        <ul id="list" className="list-group list-group-consumision">
+                        <ul id="list" className="list-group list-group-consumision no-pagination">
                             {this.state.loading  ? 
                                 <Spinner animation="border" variant="primary" style={{margin:"25px",alignSelf:"center"}}/> 
                             :

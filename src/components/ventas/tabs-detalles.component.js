@@ -59,35 +59,44 @@ export default class TabsDetallesVentas extends Component{
                 .catch(err => console.log(err))
         }
     }
-    updateDetallesMontos = async () => {
+    updateDetallesMontos = async (consumisiones) => {        
         let detallesMontos = {total_saldo:0, total_pagado: 0, total_monto: 0}
-        let pagos =  await axios.get(configuracion.serverUrl + "/pagos/reserva/"+this.state.reserva._id)
+       
+        if(consumisiones !== undefined){
+            await consumisiones.map(element => {
+                
+                detallesMontos.total_monto += parseInt(element.precio_total.replace(/\./gi,''));
+                detallesMontos.total_pagado += parseInt(element.total_pagado.replace(/\./gi,''));
+                detallesMontos.total_saldo += parseInt(element.saldo.replace(/\./gi,''));
+            })            
+        }else{
+            let pagos =  await axios.get(configuracion.serverUrl + "/pagos/reserva/"+this.state.reserva._id)
             .then(datos => datos.data)
             .catch(err => undefined)
 
-        let consumisiones =  await axios.get(configuracion.serverUrl + "/consumisiones/reserva/"+this.state.reserva._id)
-            .then(datos => datos.data)
-            .catch(err => undefined)
-        
-        await consumisiones.map(element => {
-            let pagos_details = {total_pagado:0};
-            pagos.map(pago => {
-                if(pago.consumision._id === element._id){ 
-                    pagos_details.total_pagado += parseInt(pago.precio_total.replace(/\./gi,''));
-                }
+            let consumisiones =  await axios.get(configuracion.serverUrl + "/consumisiones/reserva/"+this.state.reserva._id)
+                .then(datos => datos.data)
+                .catch(err => undefined)
+            
+            await consumisiones.map(element => {
+                let pagos_details = {total_pagado:0};
+                pagos.map(pago => {
+                    if(pago.consumision._id === element._id){ 
+                        pagos_details.total_pagado += parseInt(pago.precio_total.replace(/\./gi,''));
+                    }
+                })
+
+                detallesMontos.total_monto += parseInt(element.precio_total.replace(/\./gi,''));
+                detallesMontos.total_pagado += pagos_details.total_pagado;
+                detallesMontos.total_saldo += pagos_details.total_pagado - parseInt(element.precio_total.replace(/\./gi,''));
             })
-
-            detallesMontos.total_monto += parseInt(element.precio_total.replace(/\./gi,''));
-            detallesMontos.total_pagado += pagos_details.total_pagado;
-            detallesMontos.total_saldo += pagos_details.total_pagado - parseInt(element.precio_total.replace(/\./gi,''));
-        })
+        }
 
         this.setState({
             det_total_monto: convertMiles(detallesMontos.total_monto),
             det_total_pagado: convertMiles(detallesMontos.total_pagado),
             det_total_saldo: convertMiles(detallesMontos.total_saldo)
         })
-
         
     }
     detallesMontos = () => {        

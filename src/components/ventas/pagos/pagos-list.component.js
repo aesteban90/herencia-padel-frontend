@@ -31,10 +31,11 @@ export default class PagosList extends Component{
                     loading: false
                 })
                 //Agregando los pagos en la Lista para la exportacion
-                pagosListDetalle = response.data;                
+                pagosListDetalle = response.data;       
+                
             })
             .catch(err => console.log(err))
-
+        
         //Actualizando los montos de la reverva en el detalle padre
         this.props.updateDetallesMontos();
     }
@@ -43,16 +44,25 @@ export default class PagosList extends Component{
             this.props.stateTabs.updateListPagos = false;
             this.updateList();                
         }
+        //Calculando Totales Pagos
+        window.calcularTotalesPagos();
     }
     
     deleteData = async (jsondatos) => {
         await axios.delete(configuracion.serverUrl + "/pagos/"+jsondatos._id)
-            .then(res => console.log(res.data))
+            .then(() => { 
+                //Actualizando los montos de la reverva en el detalle padre
+                this.props.updateDetallesMontos()
+            })
             .catch(err => console.log(err))
 
         this.setState({
-            datos: this.state.datos.filter(el => el._id !== jsondatos._id)
+            datos: this.state.datos.filter(el => el._id !== jsondatos._id),
+            updateForm: true
         });
+
+        //Calculando Totales Pagos
+        window.calcularTotalesPagos();
     }
 
     updateData = (jsondatos) => {this.setState({idUpdate: jsondatos._id})}
@@ -74,8 +84,8 @@ export default class PagosList extends Component{
                         </div>
                         <div className="col-md-4 details-pagos">
                             Cantidad: <span>{dato.cantidad}</span><br/>
-                            Precio Unitario: <span>{dato.precio_unitario}</span><br/>
-                            Precio Total: <span>{dato.precio_total}</span><br/>
+                            Precio Unitario: <span>{dato.precio_unitario} Gs.</span><br/>
+                            Precio Total: <span id="item-total">{dato.precio_total} Gs.</span><br/>
                         </div>
                         <div className="col-md-2 text-right">
                             <button onClick={() => this.updateData(dato)} type="button" className="btn btn-light btn-sm mr-1"><FontAwesomeIcon icon={faEdit} /></button>
@@ -101,8 +111,8 @@ export default class PagosList extends Component{
                                 </div>                                 
                             </div>
                         </div>
-                        <input className="form-control inputsearch" type="search" placeholder="Busqueda (minimo 3 letras)..." />
-                        <ul id="list" className="list-group">
+                        <input className="form-control inputsearch seccion-pagos" type="search" placeholder="Busqueda (minimo 3 letras)..." />
+                        <ul id="list-pagos" className="list-group">
                             {this.state.loading  ? 
                                 <Spinner animation="border" variant="primary" style={{margin:"25px",alignSelf:"center"}}/> 
                             :
@@ -110,7 +120,14 @@ export default class PagosList extends Component{
                                     <div className="col-md-12 text-center m-3">Sin registros encontrados</div>
                                 :
                                     this.datalist()
-                            }
+                            }                            
+                        </ul>
+                        <ul>
+                            <li className="list-group-item-nofilter">
+                                <div className="col-md-10 details-pagos">
+                                    <b>Totales:</b> <span className="list-totales-pagos text-right" ></span><br/>                                                
+                                </div>
+                            </li>
                         </ul>                     
                     </div>
                 </div>
