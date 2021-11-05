@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import axios from 'axios';
 import PagosForm from './pagos-form.component';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {faPlus, faEdit, faTrash} from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faEdit, faTrash, faCheckSquare } from '@fortawesome/free-solid-svg-icons';
 import Spinner from 'react-bootstrap/Spinner';
 const configuracion = require('../../../config.json');
 
@@ -67,7 +67,19 @@ export default class PagosList extends Component{
 
     updateData = (jsondatos) => {this.setState({idUpdate: jsondatos._id})}
     createData = (id) => {this.setState({idUpdate: id})}
+    seleccionarTodos = () => {
+        let checks = document.querySelectorAll('#facturacheck').length;
+        let checks_checked = document.querySelectorAll('#facturacheck:checked').length;
 
+        if(checks ===  checks_checked ){
+            //Desmarca todos
+            document.querySelectorAll('#facturacheck').forEach(element => element.checked = false)
+        }else{
+            //Marca todos
+            document.querySelectorAll('#facturacheck').forEach(element => element.checked = true)
+        }
+        
+    }
     datalist(){
         if(this.state.datos){
             return this.state.datos.map(dato => {
@@ -105,8 +117,9 @@ export default class PagosList extends Component{
                     <div className="card">
                         <div className="card-header">
                             <div className="card-title row mb-0">  
-                                <div className="col-md-10">Detalles de los Pagos</div>
-                                <div className="col-md-2 text-right">
+                                <div className="col-md-8">Detalles de los Pagos</div>
+                                <div className="col-md-4 text-right">
+                                <button onClick={() => this.seleccionarTodos()} type="button" className="btn btn-light btn-sm mr-2"><FontAwesomeIcon icon={faCheckSquare} /> Seleccionar Todos</button>
                                     <button onClick={() => this.createData("NEW")} type="button" className="btn btn-warning btn-sm"><FontAwesomeIcon icon={faPlus} /> Nuevo</button>
                                 </div>                                 
                             </div>

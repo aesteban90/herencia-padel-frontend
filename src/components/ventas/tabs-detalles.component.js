@@ -16,6 +16,7 @@ export default class TabsDetallesVentas extends Component{
             updateTab: true,
             updateListPagos: true, 
             updateListConsumision: true,
+            updateListFacturacion: true,
             nickname:'',
             nombre_completo:'',
             password:'',
@@ -50,7 +51,7 @@ export default class TabsDetallesVentas extends Component{
             this.actualizandoReserva();
         });
     }
-    setKey = (key) => {this.setState({keyTab: key, updateListPagos: true, updateListConsumision: true})}
+    setKey = (key) => {this.setState({keyTab: key, updateListPagos: true, updateListConsumision: true, updateListFacturacion: true})}
     
     getDataReserva = async () => {
         if(this.props.match.params.id){
