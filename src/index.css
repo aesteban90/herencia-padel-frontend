@@ -210,3 +210,11 @@ hr.solid {
   flex-wrap: wrap;
   padding: 0.75rem 0;
 }
+.logo-wrapper-factura{
+  position: absolute;
+  left: 435px;
+  top: 5px;
+}
+.logo-wrapper-factura img {
+  width: 170px;
+}

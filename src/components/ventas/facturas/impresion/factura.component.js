@@ -1,22 +1,37 @@
-import React, {Component} from 'react';
-import FacturasForm from './facturas-form.component';
-import { convertMiles } from '../../../utils/utils';
-import { pagosListDetalle } from '../pagos/pagos-list.component';
+import React, { Component } from 'react';
+import axios from 'axios';
+import { convertMiles } from '../../../../utils/utils';
+import companyLogo from '../../../../imagens/Herencia-padel-white.png';
+const configData = require('../../../../config.json');
 
 export default class FacturaImpresion extends Component{
     constructor(props){
         super(props);
-        this.state = {}
+        this.state = {
+            factura: {}
+        }
         this.datalist = this.datalist.bind(this);
     }
+    
+    async componentDidMount(){
+        //Obtener los datos de la factura
+        if(this.state.factura !== undefined){
+            await axios.get(configData.serverUrl + "/facturas/"+this.props.match.params.id)
+                .then(response => {
+                    const factura = response.data;
+                    this.setState({
+                        factura: factura
+                    })
+                })
+                .catch(err => console.log(err));
 
-    componentDidMount(){
-       //Obtener los datos de la factura
+            document.querySelector('.direccion').innerHTML = this.state.factura.cabecera_datos_direccion;
+        }
     }
 
-    datalist(){
-        if(this.state.datos){
-            let table = this.state.groupByItem.map(dato => {                
+    datalist(){   
+        if(this.state.factura.productos){
+            let table = this.state.factura.productos.map(dato => {                
                 return (
                     <tr key={dato.id}>
                         <td>{dato.cantidad}</td>
@@ -34,24 +49,24 @@ export default class FacturaImpresion extends Component{
             table.push(
                 <tr className="subtotales" key='subtotales'>
                     <th colSpan={3}>Subtotales</th>
-                    <td className="text-right">{convertMiles(this.state.subtotal_excentas)}</td>
-                    <td className="text-right">{convertMiles(this.state.subtotal_iva5incluido)}</td>
-                    <td className="text-right">{convertMiles(this.state.subtotal_iva10incluido)}</td>
+                    <td className="text-right">{convertMiles(this.state.factura.subtotal_excentas)}</td>
+                    <td className="text-right">{convertMiles(this.state.factura.subtotal_iva5incluido)}</td>
+                    <td className="text-right">{convertMiles(this.state.factura.subtotal_iva10incluido)}</td>
                 </tr>)
             table.push(
                 <tr key='totales'>
                     <th colSpan={5}>Total a Pagar</th>
-                    <th className="text-right">{convertMiles(this.state.total_pagar)}</th>
+                    <th className="text-right">{convertMiles(this.state.factura.total_pagar)}</th>
                 </tr>
             )
             table.push(
                 <tr key='liquidacion'>
                     <th>IVA 5%</th>
-                    <td>{convertMiles(this.state.total_iva5)}</td>
+                    <td>{convertMiles(this.state.factura.total_iva5)}</td>
                     <th>IVA 10%</th>
-                    <td>{convertMiles(this.state.total_iva10)}</td>
+                    <td>{convertMiles(this.state.factura.total_iva10)}</td>
                     <th>Total IVA</th>
-                    <td>{convertMiles(this.state.total_iva)}</td>
+                    <td>{convertMiles(this.state.factura.total_iva)}</td>
                 </tr>
             )
             return table
@@ -59,31 +74,43 @@ export default class FacturaImpresion extends Component{
     }
     render(){       
         return(            
-            <div className="row">
+            <div className="container mt-4">
                 <div className="col-md-12 row">
-                    <div className="card col-md-7 factura_cabecera">
-                        <div className="col-md-12">
-                            <b>EMEVA S.R.L.</b><br/>
-                            <u>ACTIVIDADES DE DIVERSION Y ENTRETENIMIENTO</u><br/>
-                            <span className="factura_cabecera">
-                                Calle: Paso de Patria 848 c/ Av. Bruno Guggiari - Lambare, Central<br/>
-                                Sucursal 1: San Estanislao e/ Yuty y Carmen del Parana - Lambare, Central<br/>
-                                Celulares: (0984) 919 991 / (0981) 203 966 <b>emevasrl@gmail.com</b>
-                            </span>
+                    <div className="card col-md-7">
+                        <div className="col-md-12 pt-2">
+                            <div className="logo-wrapper-factura">
+                                <img src={companyLogo} alt="Herencia Padel"/>
+                            </div>
+                            <b>{this.state.factura.cabecera_datos_titulo}</b><br/>
+                            <u>{this.state.factura.cabecera_datos_subtitulo}</u><br/>
+                            <span className=" direccion"></span>
                         </div>              
                     </div>
-                    <div className="card col-md-5 factura_cabecera">                         
+                    <div className="card col-md-5 pt-2">                         
                         <div className="col-md-12 text-center">
-                            <b>TIMBRADO N° 15180240</b><br/>
-                            Fecha Inicio de Vigencia 19-10-2021<br/>
-                            Fecha Fin de Vigencia 31-10-2022<br/>
-                            <b>RUC 80117565-8</b><br/>
-                            <b>FACTURA 002 001</b>
+                            <b>TIMBRADO N° {this.state.factura.cabecera_timbrado}</b><br/>
+                            Fecha Inicio de Vigencia {this.state.factura.cabecera_vigencia_inicio}<br/>
+                            Fecha Fin de Vigencia {this.state.factura.cabecera_vigencia_fin}<br/>
+                            <b>RUC {this.state.factura.cabecera_ruc}</b><br/>
+                            <b>FACTURA {this.state.factura.cabecera_factura}</b>
                         </div>                           
                     </div>
+                    
                     <div className="card col-md-12">                        
                         <table className="table">
                             <thead>
+                                <tr>
+                                    <td>Fecha: 02-15-25</td>
+                                    <td>Condicion de Venta: <b>Contado X</b> - Credito</td>
+                                </tr>
+                                <tr>
+                                    <td>Nombre: Esteban Meza</td>
+                                    <td>Ruc: 3.638.216-7</td>
+                                </tr>
+                                <tr>
+                                    <td>Direccion: Itaipu 548 c/ Herminio peralta</td>
+                                    <td>Telefono: 0987-544-666</td>
+                                </tr>
                                 <tr>
                                     <th scope="col">Cant</th>
                                     <th >Descripcion</th>
@@ -94,12 +121,7 @@ export default class FacturaImpresion extends Component{
                                 </tr>
                             </thead>
                             <tbody>
-                                {
-                                   this.state.datos.length === 0 ?
-                                        <tr><td colSpan={6} className="text-center">Sin registros encontrados</td></tr>
-                                    :
-                                        this.datalist()
-                                }
+                                {this.datalist()}                                
                             </tbody>
                         </table>                     
                     </div>

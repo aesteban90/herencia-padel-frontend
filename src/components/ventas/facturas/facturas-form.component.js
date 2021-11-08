@@ -69,7 +69,7 @@ export default class FacturasForm extends Component{
         document.querySelector('#alert').classList.replace('hide','show');
         if(success){
             document.querySelector('#alert').classList.replace('alert-warning','alert-success');
-            document.querySelector('#alert #text').innerHTML = '<strong>Exito!</strong> Generando la factura..'
+            document.querySelector('#alert #text').innerHTML = '<strong>Exito!</strong> Factura Generada'
         }else{
             document.querySelector('#alert').classList.replace('alert-success','alert-warning');
             document.querySelector('#alert #text').innerHTML = '<strong>Error!</strong> No se pudo generar la Factura. <br />Contacte con el administrador.'
@@ -82,16 +82,19 @@ export default class FacturasForm extends Component{
     }
     
     onSubtmit = (e) => {
-        e.preventDefault();     
-        console.log('Facturas List',this.props.FacturasListState);
+        e.preventDefault(); 
+        document.querySelector('#alert').classList.replace('hide','show');   
+        document.querySelector('#alert').classList.replace('alert-warning','alert-light');
+        document.querySelector('#alert #text').innerHTML = '<div class="spinner-border" role="status"></div> Generando la factura..'         
+
         const factura = {
             reserva: this.state.reserva._id,
             cabecera_datos_titulo: 'EMEVA S.R.L.',  
             cabecera_datos_subtitulo: 'ACTIVIDADES DE DIVERSION Y ENTRETENIMIENTO',
             cabecera_datos_direccion: 'Calle: Paso de Patria 848 c/ Av. Bruno Guggiari - Lambare, Central<br />Sucursal 1: San Estanislao e/ Yuty y Carmen del Parana - Lambare, Central<br />Celulares: (0984) 919 991 / (0981) 203 966 emevasrl@gmail.com',
             cabecera_timbrado: '15180240',
-            cabecera_figencia_inicio: '19-10-2021',
-            cabecera_figencia_fin: '31-10-2022',
+            cabecera_vigencia_inicio: '19-10-2021',
+            cabecera_vigencia_fin: '31-10-2022',
             cabecera_ruc: '80117565-8',
             cabecera_factura: '002 001',
             productos: this.props.FacturasListState.groupByItem,

@@ -11,6 +11,7 @@ import CanchasList from './components/configuracion/canchas/canchas-list.compone
 import ClientesList from './components/configuracion/clientes/cliente-list.component';
 import ProveedorList from './components/configuracion/proveedores/proveedor-list.component';
 import ComprasList from './components/configuracion/compras/compras-list.component';
+import FacturaImpresion from './components/ventas/facturas/impresion/factura.component';
 import TabsDetallesVentas from './components/ventas/tabs-detalles.component';
 import Login from './components/login/login';
 import logout from './components/login/logout';
@@ -23,6 +24,7 @@ const key = configData.JWTKEY;
 
 const App = () => {
     const { token, setToken } = useToken(); 
+    
     if(!token) {
       console.log('Unauthorized: No token provided');
       return <Login setToken={setToken} />
@@ -104,20 +106,28 @@ const App = () => {
           )
         }
       }
-
+      const noDisplayMenu = !window.location.pathname.includes("/Factura/Impresion/");
+      
       return (
           <div id="container"> 
               <div className="body-wrapper container-fluid p-0">
-                  <Router>  
-                      <NavbarTop>
-                        <NavbarTopItem id="account" icon={faUser} > {usuarioLogueado.name}</NavbarTopItem>
-                        <NavbarTopItem id="closesession" icon={faSignOutAlt} > Cerrar Session</NavbarTopItem>
-                      </NavbarTop>
-                      <Navbar> 
-                        {menu_ventas()} 
-                        {menu_adm()}                  
-                      </Navbar> 
-                      <Route path="/" exact component={Dashboard} />                      
+                  <Router>
+                      { noDisplayMenu &&
+                        <div>
+                          <NavbarTop>
+                            <NavbarTopItem id="account" icon={faUser} > {usuarioLogueado.name}</NavbarTopItem>
+                            <NavbarTopItem id="closesession" icon={faSignOutAlt} > Cerrar Session</NavbarTopItem>
+                          </NavbarTop>
+      
+                          <Navbar> 
+                            {menu_ventas()} 
+                            {menu_adm()}     
+                          </Navbar>
+                        </div>                         
+                      } 
+                      
+                      <Route path="/" exact component={Dashboard} />
+                      <Route path="/Factura/Impresion/:id" exact component={FacturaImpresion} /> 
                       {menu_ventas_ROUTE()} 
                       {menu_adm_ROUTE()} 
                   </Router>
