@@ -10,6 +10,7 @@ export default class FacturasList extends Component{
             reserva: {},
             datos: [],
             groupByItem: [],
+            idsPagos: [],
             subtotal_iva10incluido:'',
             subtotal_iva5incluido:'',
             subtotal_excentas:'',
@@ -39,6 +40,7 @@ export default class FacturasList extends Component{
     groupByProducts(){
         let ids = [];
         let groupByItem = [];
+        let idsPagos = [];
         document.querySelectorAll('#facturacheck:checked').forEach(item => {ids.push(item.value)})
         let subtotal_iva10incluido = 0
         let subtotal_iva5incluido = 0
@@ -89,6 +91,9 @@ export default class FacturasList extends Component{
                 subtotal_iva5incluido += iva5incluido;
                 subtotal_excentas += excentas;
 
+                //Agregado los ids de pagos para actualizarlos
+                idsPagos.push(idPago);
+
                 if(group){
                     groupByItem.push({
                         id, 
@@ -113,6 +118,7 @@ export default class FacturasList extends Component{
     
         this.setState({
             datos: pagosListDetalle,
+            idsPagos,
             //Cargando los items a facturar
             groupByItem,
             subtotal_iva10incluido,

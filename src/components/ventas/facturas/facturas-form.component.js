@@ -42,6 +42,7 @@ export default class FacturasForm extends Component{
 
     //Metodo que se ejecuta antes del render
     componentDidMount(){
+        
         //Obteniendo la lista de clientes para la facturacion
         this.getClientesOptions();
 
@@ -65,11 +66,13 @@ export default class FacturasForm extends Component{
     }  
     onChangeRazonSocial = (e) => {this.setState({razonSocial: e.target.value})}
 
-    showNotification(success){        
+    showNotification(success, factura){        
         document.querySelector('#alert').classList.replace('hide','show');
         if(success){
             document.querySelector('#alert').classList.replace('alert-warning','alert-success');
             document.querySelector('#alert #text').innerHTML = '<strong>Exito!</strong> Factura Generada'
+
+            window.open('/Factura/Impresion/'+factura._id , '_blank');
         }else{
             document.querySelector('#alert').classList.replace('alert-success','alert-warning');
             document.querySelector('#alert #text').innerHTML = '<strong>Error!</strong> No se pudo generar la Factura. <br />Contacte con el administrador.'
@@ -86,7 +89,7 @@ export default class FacturasForm extends Component{
         document.querySelector('#alert').classList.replace('hide','show');   
         document.querySelector('#alert').classList.replace('alert-warning','alert-light');
         document.querySelector('#alert #text').innerHTML = '<div class="spinner-border" role="status"></div> Generando la factura..'         
-
+        
         const factura = {
             reserva: this.state.reserva._id,
             cabecera_datos_titulo: 'EMEVA S.R.L.',  
@@ -97,6 +100,8 @@ export default class FacturasForm extends Component{
             cabecera_vigencia_fin: '31-10-2022',
             cabecera_ruc: '80117565-8',
             cabecera_factura: '002 001',
+            cliente_ruc: this.state.ruc + '-' + this.state.div,
+            cliente_razon_social: this.state.razonSocial,
             productos: this.props.FacturasListState.groupByItem,
             subtotal_iva5incluido: this.props.FacturasListState.subtotal_iva5incluido,
             subtotal_iva10incluido: this.props.FacturasListState.subtotal_iva10incluido,
@@ -109,21 +114,31 @@ export default class FacturasForm extends Component{
             user_updated: this.state.user_created  
         }
         axios.post(configData.serverUrl + '/facturas/add',factura)
-            .then(res => this.showNotification(true))
+            .then(res => {
+                const factura = res.data;
+                const pagos = {
+                    factura: factura._id,
+                    idsPagos: this.props.FacturasListState.idsPagos
+                }
+                
+                //Actualizando los pagos
+                axios.post(configData.serverUrl + '/pagos/updateMany', pagos)
+                    .then(() => console.log('Pagos actualizados'))
+                    .catch(err => console.log('Error en actualizacion de pagos', err));
+                this.showNotification(true, factura)
+            })
             .catch(err => this.showNotification(false));
         this.setState({
             ruc:'',
             div:'',
-            razonsocial:'',
+            razonSocial:'',
             clienteSelected: {}
-        })  
+        })
     }   
     
-    render(){  
-        
+    render(){    
         return(
-            <div className="container"> 
-                
+            <div className="container">                 
                 <form onSubmit={this.onSubtmit}>
                     <div className="row">
                         <div className="form-group col-md-12">

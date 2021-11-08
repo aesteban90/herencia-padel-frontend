@@ -101,7 +101,7 @@ export default class ReservasForm extends Component{
             reserva_horas: horas, 
             reserva_hora_inicial: horas[0],
             estado: 'Reservado',
-            monto: convertMiles(precioHora * horas.length),
+            total_monto: convertMiles(precioHora * horas.length),
             user_created: this.state.user_created,
             user_updated: this.state.user_updated
         }        
@@ -113,8 +113,8 @@ export default class ReservasForm extends Component{
                     reserva: reservanew._id,
                     cancha: this.state.cancha._id,
                     cantidad: 1,
-                    precio_unitario: reservanew.monto,
-                    precio_total: reservanew.monto,
+                    precio_unitario: reservanew.total_monto,
+                    precio_total: reservanew.total_monto,
                     user_created: this.state.user_created,
                     user_updated: this.state.user_updated
                 }

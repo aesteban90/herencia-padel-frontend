@@ -67,16 +67,24 @@ export default class PagosList extends Component{
 
     updateData = (jsondatos) => {this.setState({idUpdate: jsondatos._id})}
     createData = (id) => {this.setState({idUpdate: id})}
+    checked = () => {
+        document.querySelector('.btn-seleccionar').setAttribute('style','border:1px solid black; color: black')
+    }
     seleccionarTodos = () => {
-        let checks = document.querySelectorAll('#facturacheck').length;
-        let checks_checked = document.querySelectorAll('#facturacheck:checked').length;
+        // let checks = document.querySelectorAll('#facturacheck').length;
+        // let checks_checked = document.querySelectorAll('#facturacheck:checked').length;
+        let checks = document.querySelectorAll('#list-pagos .list-group-item:not([style*="display: none;"]) #facturacheck').length;
+        let checks_checked = document.querySelectorAll('#list-pagos .list-group-item:not([style*="display: none;"]) #facturacheck:checked').length;
 
         if(checks ===  checks_checked ){
             //Desmarca todos
-            document.querySelectorAll('#facturacheck').forEach(element => element.checked = false)
+            document.querySelector('.btn-seleccionar').setAttribute('style','border:1px solid black; color: black')
+            document.querySelectorAll('#list-pagos .list-group-item:not([style*="display: none;"]) #facturacheck').forEach(element => element.checked = false)
         }else{
+            
             //Marca todos
-            document.querySelectorAll('#facturacheck').forEach(element => element.checked = true)
+            document.querySelector('.btn-seleccionar').setAttribute('style','border:1px solid blue; color: blue');
+            document.querySelectorAll('#list-pagos .list-group-item:not([style*="display: none;"]) #facturacheck').forEach(element => element.checked = true)
         }
         
     }
@@ -99,13 +107,20 @@ export default class PagosList extends Component{
                             Precio Unitario: <span>{dato.precio_unitario} Gs.</span><br/>
                             Precio Total: <span id="item-total">{dato.precio_total} Gs.</span><br/>
                         </div>
-                        <div className="col-md-2 text-right">
-                            <button onClick={() => this.updateData(dato)} type="button" className="btn btn-light btn-sm mr-1"><FontAwesomeIcon icon={faEdit} /></button>
-                            <button onClick={() => this.deleteData(dato)} type="button" className="btn btn-danger btn-sm"><FontAwesomeIcon icon={faTrash} /></button>
-                            <div>
-                                <input className="form-check-input m2" id="facturacheck" name="facturacheck" type="checkbox" value={dato._id} ></input>Facturar
+                        {!dato.factura ?
+                            <div className="col-md-2 text-right">
+                                <button onClick={() => this.updateData(dato)} type="button" className="btn btn-light btn-sm mr-1"><FontAwesomeIcon icon={faEdit} /></button>
+                                <button onClick={() => this.deleteData(dato)} type="button" className="btn btn-danger btn-sm"><FontAwesomeIcon icon={faTrash} /></button>
+                                
+                                    <div>
+                                        <input className="form-check-input m2" id="facturacheck" onClick={() => this.checked()} name="facturacheck" type="checkbox" value={dato._id} ></input>Facturar
+                                    </div>                            
                             </div>
-                        </div>
+                            :
+                            <div className="col-md-2 text-center">
+                                <a href={'/Factura/Impresion/'+dato.factura} target='_blank' className="badge badge-pill badge-success p-2">Facturado</a>
+                            </div>
+                        }
                     </li>)
             })
         }
@@ -119,7 +134,7 @@ export default class PagosList extends Component{
                             <div className="card-title row mb-0">  
                                 <div className="col-md-8">Detalles de los Pagos</div>
                                 <div className="col-md-4 text-right">
-                                <button onClick={() => this.seleccionarTodos()} type="button" className="btn btn-light btn-sm mr-2"><FontAwesomeIcon icon={faCheckSquare} /> Seleccionar Todos</button>
+                                <button onClick={() => this.seleccionarTodos()} type="button" className="btn-seleccionar btn btn-light btn-sm mr-2"><FontAwesomeIcon icon={faCheckSquare} /> Seleccionar Todos</button>
                                     <button onClick={() => this.createData("NEW")} type="button" className="btn btn-warning btn-sm"><FontAwesomeIcon icon={faPlus} /> Nuevo</button>
                                 </div>                                 
                             </div>

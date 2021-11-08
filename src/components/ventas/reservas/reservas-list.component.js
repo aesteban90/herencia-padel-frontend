@@ -61,7 +61,7 @@ export default class ReservasList extends Component{
     dataListReservas = (jsondatos) => {
         return this.state.reservas.map(reserva => {
             if(jsondatos._id === reserva.cancha){
-                let saldoNegativo = (reserva.total_saldo.indexOf('-')>-1 ? {color:'red',fontWeight:'bold'} : undefined)
+                let saldoNegativo = (reserva.total_saldo && reserva.total_saldo.indexOf('-')>-1 ? {color:'red',fontWeight:'bold'} : undefined)
                 return(
                     <li className="list-group-item" key={reserva._id}>
                         <div className="col-md-4">

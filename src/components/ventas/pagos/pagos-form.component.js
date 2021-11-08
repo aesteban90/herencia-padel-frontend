@@ -86,7 +86,7 @@ export default class PagosForm extends Component{
                             }
                         })
                         element.saldo = parseInt(element.precio_total.replace(/\./gi,'')) - total_pagado;
-                        console.log('saldo',element.saldo)
+                        
                         //Si el saldo de la consumision es 0, no se visualiza para el pago                        
                         if(element.saldo > 0 ){
                             if(element.producto){

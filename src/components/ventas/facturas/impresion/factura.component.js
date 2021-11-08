@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { convertMiles } from '../../../../utils/utils';
 import companyLogo from '../../../../imagens/Herencia-padel-white.png';
+import moment from 'moment';
 const configData = require('../../../../config.json');
 
 export default class FacturaImpresion extends Component{
@@ -73,13 +74,15 @@ export default class FacturaImpresion extends Component{
         }
     }
     render(){       
+        let fecha_facturado = moment(new Date(this.state.factura.createdAt)).format("DD-MM-YYYY") ;
+        
         return(            
             <div className="container mt-4">
                 <div className="col-md-12 row">
                     <div className="card col-md-7">
                         <div className="col-md-12 pt-2">
-                            <div className="logo-wrapper-factura">
-                                <img src={companyLogo} alt="Herencia Padel"/>
+                            <div>
+                                <img src={companyLogo} style={{width:'120px',position:'absolute', left:'400px'}} alt="Herencia Padel"/>
                             </div>
                             <b>{this.state.factura.cabecera_datos_titulo}</b><br/>
                             <u>{this.state.factura.cabecera_datos_subtitulo}</u><br/>
@@ -100,24 +103,24 @@ export default class FacturaImpresion extends Component{
                         <table className="table">
                             <thead>
                                 <tr>
-                                    <td>Fecha: 02-15-25</td>
-                                    <td>Condicion de Venta: <b>Contado X</b> - Credito</td>
+                                    <td colSpan='3'><b>Fecha:</b> {fecha_facturado}</td>
+                                    <td colSpan='3'><b>Condicion de Venta:</b> Contado <b>X</b> - Credito</td>
                                 </tr>
                                 <tr>
-                                    <td>Nombre: Esteban Meza</td>
-                                    <td>Ruc: 3.638.216-7</td>
+                                    <td colSpan='3'><b>Nombre:</b> {this.state.factura.cliente_razon_social}</td>
+                                    <td colSpan='3'><b>Ruc:</b> {this.state.factura.cliente_ruc}</td>
                                 </tr>
                                 <tr>
-                                    <td>Direccion: Itaipu 548 c/ Herminio peralta</td>
-                                    <td>Telefono: 0987-544-666</td>
+                                    <td colSpan='3'><b>Direccion:</b> Itaipu 548 c/ Herminio peralta</td>
+                                    <td colSpan='3'><b>Telefono:</b> 0987-544-666</td>
                                 </tr>
                                 <tr>
-                                    <th scope="col">Cant</th>
+                                    <th style={{width:'10px'}}>Cant</th>
                                     <th >Descripcion</th>
-                                    <th >Precio Unitario</th>
-                                    <th className="text-right">Excentas</th>
-                                    <th className="text-right">5%</th>
-                                    <th className="text-right">10%</th>
+                                    <th style={{width:'130px'}} >Precio Unitario</th>
+                                    <th style={{width:'120px'}} className="text-right">Excentas</th>
+                                    <th style={{width:'120px'}} className="text-right">5%</th>
+                                    <th style={{width:'120px'}} className="text-right">10%</th>
                                 </tr>
                             </thead>
                             <tbody>
