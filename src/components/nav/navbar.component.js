@@ -1,6 +1,7 @@
 import { useState }  from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 import companyLogo from '../../imagens/herencia-padel.png';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import logout from '../login/logout';
 
 const NavbarTop = (props) =>{
@@ -49,6 +50,7 @@ const Navbar = (props) =>{
         <div className="nav-wrapper">
             <div className="logo-wrapper">
                 <img src={companyLogo} alt="Herencia Padel"/>
+                <a id="btn-menu"><FontAwesomeIcon icon={ faBars }  /> </a>
             </div>
             <div className="navigation" id="nav">
                 {props.children}
@@ -61,35 +63,22 @@ const NavBarItemFolder = (props) => {
     if(props.class === "account"){
         return(
             <div className="nav-item">
-                <span className={`nav-list-item text-center ${props.class ? props.class : ''}`}>
-                    <p>Bienvenido</p>
-                    <i className={props.icon} ></i>{props.name}
-                </span>
                 <div className="sub-nav" style={{display:'block'}}>
                     {props.children}
                 </div>
             </div>
         )
     }
-    if(props.class === "inicio"){
-        return(
-            <div className="nav-item active">
-                <span className={`nav-list-item ${props.class ? props.class : ''}`}><i className={props.icon} ></i>{props.name}</span>
-                <div className="sub-nav" style={{display:'block'}}>
-                    {props.children}
-                </div>
-            </div>
-        )
-    }
+   
     return(
         <div className="nav-item active">
-            <span className={`nav-list-item ${props.class ? props.class : ''}`}><i className={props.icon} ></i>{props.name}</span>
+            {/* <span className={`nav-list-item ${props.class ? props.class : ''}`}><i className={props.icon} ></i>{props.name}</span> */}
+            <span className={`nav-list-item ${props.class ? props.class : ''}`}><FontAwesomeIcon icon={ props.icon }  /> {props.name}</span>
             <div className="sub-nav" style={{display:'block'}}>
                 {props.children}
             </div>
         </div>
     )
-    
 }
 
 const NavBarItem = (props) => {

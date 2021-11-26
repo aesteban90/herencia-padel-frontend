@@ -218,3 +218,18 @@ hr.solid {
 .logo-wrapper-factura img {
   width: 170px;
 }
+.logo-wrapper #btn-menu{
+  color: white;
+  position: absolute;
+  left: 220px;
+}
+
+@media screen and (max-width: 1199px){
+  .nav-wrapper {
+      width: 250px;
+      float: none;
+      position: unset;
+      height: 100%;
+  }
+  
+}

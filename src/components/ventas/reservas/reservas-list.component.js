@@ -44,8 +44,10 @@ export default class ReservasList extends Component{
     }
     reservasList = async () => {
         let fecha = moment(this.state.fechaReserva).format('DD/MM/YYYY');
+        //let fecha = new Date();
         await axios.post(configuracion.serverUrl + "/reservas/fecha",{fechaReserva: fecha})
             .then(response => {
+                console.log()
                 this.setState({
                     reservas: response.data,
                     loadingDet: false
@@ -66,10 +68,10 @@ export default class ReservasList extends Component{
                     <li className="list-group-item" key={reserva._id}>
                         <div className="col-md-4">
                             <b>Reservado por: </b>{reserva.reservado_por}<br/>
-                            <b>Reservado: </b>{reserva.reserva_fecha}<br/>
+                            <b>Reservado: </b>{reserva.fecha}<br/>
                             <div className="hours-selected-container">
                                 <b>Horas:</b> 
-                                {reserva.reserva_horas.map(element => {
+                                {reserva.horas.map(element => {
                                     return (
                                         <div key={element} className="hours-selected-item-info" >
                                             <span> {`${element}hs`} </span>
@@ -170,7 +172,11 @@ export default class ReservasList extends Component{
                         </div>
                     </div>
                     <div className="col-md-4 text-center">
-                        {!this.state.id ?  <Spinner animation="border" variant="primary" style={{margin:"25px"}}/> : <ReservasForm id={this.state.id} fechaReserva={this.state.fechaReserva} onUpdateParentList={this.reservasList}/>}
+                        {!this.state.id ? 
+                            <Spinner animation="border" variant="primary" style={{margin:"25px"}}/> 
+                        : 
+                            <ReservasForm id={this.state.id} fechaReserva={this.state.fechaReserva} onUpdateParentList={this.reservasList}/>
+                        }
                     </div>
                 </div>
             </div>

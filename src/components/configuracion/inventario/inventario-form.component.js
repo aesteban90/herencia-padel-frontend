@@ -65,6 +65,7 @@ export default class InventarioForm extends Component{
             tipoSelected: {value:'venta', label: 'Para Ventas'},
             tipoOptions: [{value:'venta', label: 'Para Vender'},{value:'alquiler', label: 'Para Alquilar'}]
         })
+       
     }
     onChangeCodigo = (e) => {this.setState({codigo: e.target.value})}
     onChangeDescripcion = (e) => {this.setState({descripcion: e.target.value})}
@@ -175,6 +176,7 @@ export default class InventarioForm extends Component{
                                     onChange={this.onChangeTipo}                                    
                                     required/>
                             </div>
+                            
                             <div className="form-group col-md-4">
                                 <label>Cantidad: </label>
                                 <NumberFormat 

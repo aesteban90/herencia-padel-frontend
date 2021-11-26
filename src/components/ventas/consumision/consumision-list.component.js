@@ -1,9 +1,11 @@
 import React, {Component} from 'react';
 import axios from 'axios';
 import ConsumisionForm from './consumision-form.component';
+import ReservasForm from '../reservas/reservas-form.component';
+import PagosForm from '../pagos/pagos-form.component';
 import { Spinner } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faEdit, faTrash, faCreditCard } from '@fortawesome/free-solid-svg-icons';
 import { convertMiles } from '../../../utils/utils';
 const configuracion = require('../../../config.json');
 
@@ -14,9 +16,11 @@ export default class ConsumisionList extends Component{
             datos: [],
             loading: true,
             idUpdate: '',
+            consumision: undefined,
             didUpdate: true,
             total_pagado: '',
             salgo: '',
+            formulario: 'consumision',
             reserva: {}
         }
         this.datalist = this.datalist.bind(this);
@@ -48,7 +52,6 @@ export default class ConsumisionList extends Component{
             datos: consumisiones,
             loading: false
         })
-       
         //Actualizando los montos de la reverva en el detalle padre
         this.props.updateDetallesMontos(consumisiones);
     }
@@ -71,8 +74,15 @@ export default class ConsumisionList extends Component{
         });
     }
 
-    updateData = (jsondatos) => {this.setState({idUpdate: jsondatos._id})}
-    createData = (id) => {this.setState({idUpdate: id})}
+    updateData = (jsondatos) => {
+        if(jsondatos.cancha){
+            this.setState({consumision: jsondatos, formulario: "cancha"})
+        }else{
+            this.setState({consumision: jsondatos, formulario: "consumision"})
+        } 
+    }
+    generarPago = (jsondatos) => {this.setState({consumision: jsondatos, formulario: "pagos"})}
+    createData = (id) => {this.setState({consumision: undefined, formulario: "consumision"})}
 
     datalist(){
         if(this.state.datos){
@@ -85,13 +95,14 @@ export default class ConsumisionList extends Component{
                             {dato.cancha && dato.cancha.descripcion}
                             <br/>
                             <span className="details-user-actions">
+                                <b> Pedido por: </b>{dato.pedido_por}<br/>
                                 <b> Creado por: </b>{dato.user_created}
                             </span>
                         </div>
                         <div className="col-md-4 details-consumision ">
                             Cantidad: <span>
                                 {dato.producto && dato.cantidad}
-                                {dato.cancha && this.state.reserva.reserva_horas.length+' horas'}
+                                {dato.cancha && this.state.reserva.horas.length+' horas'}
                             </span><br/>
                             Cantidad Pagado: <span>{dato.total_pagado_cantidad}</span><br/>
                             Precio Unitario: <span>{dato.precio_unitario}</span>
@@ -101,8 +112,9 @@ export default class ConsumisionList extends Component{
                             Total Pagado: <span>{dato.total_pagado}</span><br/>
                             Saldo: <span style={saldoNegativo}>{dato.saldo}</span><br/>
                         </div>
-                        <div className="col-md-1 text-right ">
-                            {!dato.cancha && <button onClick={() => this.updateData(dato)} type="button" className="btn btn-light btn-sm mr-1"><FontAwesomeIcon icon={faEdit} /></button>}
+                        <div className="col-md-1 text-center">
+                            <button onClick={() => this.generarPago(dato)} type="button" className="btn btn-success btn-sm"><FontAwesomeIcon icon={faCreditCard} /></button>
+                            <button onClick={() => this.updateData(dato)} type="button" className="btn btn-warning btn-sm"><FontAwesomeIcon icon={faEdit} /></button>
                             {!dato.cancha && <button onClick={() => this.deleteData(dato)} type="button" className="btn btn-danger btn-sm"><FontAwesomeIcon icon={faTrash} /></button>}
                         </div>
                     </li>)
@@ -136,7 +148,9 @@ export default class ConsumisionList extends Component{
                     </div>
                 </div>
                 <div className="col-md-4">
-                    <ConsumisionForm reserva={this.state.reserva} idUpdate={this.state.idUpdate} onUpdateParentList={this.updateList}/>
+                    {this.state.formulario === "consumision" && <ConsumisionForm reserva={this.state.reserva} consumision={this.state.consumision} onUpdateParentList={this.updateList}/>}
+                    {this.state.formulario === "cancha" && <ReservasForm reserva={this.state.reserva} />}
+                    {this.state.formulario === "pagos" && <PagosForm reserva={this.state.reserva} consumision={this.state.consumision} onUpdateParentList={this.updateList}/>}
                 </div>
             </div>            
         )

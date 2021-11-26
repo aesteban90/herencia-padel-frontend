@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { Navbar,NavBarItemFolder,NavBarItem, NavbarTop, NavbarTopItem } from './components/nav/navbar.component';
-import { faUser, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faSignOutAlt, faArrowAltCircleRight, faCartPlus, faCogs, faThLarge} from '@fortawesome/free-solid-svg-icons';
 import Dashboard from './components/dashboard.component'; 
 import ReservasList from './components/ventas/reservas/reservas-list.component';
 import ReseravasForm from './components/ventas/reservas/reservas-form.component';
@@ -11,6 +11,8 @@ import CanchasList from './components/configuracion/canchas/canchas-list.compone
 import ClientesList from './components/configuracion/clientes/cliente-list.component';
 import ProveedorList from './components/configuracion/proveedores/proveedor-list.component';
 import ComprasList from './components/configuracion/compras/compras-list.component';
+import AjustesList from './components/configuracion/ajustes/ajustes-list.component';
+import CategoriasList from './components/configuracion/categorias/categorias-list.component';
 import FacturaImpresion from './components/ventas/facturas/impresion/factura.component';
 import TabsDetallesVentas from './components/ventas/tabs-detalles.component';
 import Login from './components/login/login';
@@ -48,7 +50,7 @@ const App = () => {
         if(usuarioLogueado.roles.includes('VENTAS')){
           return (
             <div> 
-              <NavBarItemFolder icon="fa fa-ball" name="Inicio" class="inicio">
+              <NavBarItemFolder icon={ faThLarge } name="Inicio" class="inicio">
                 <NavBarItem name="Dasboard" path="/" />
                 <NavBarItem name="Reservas" path="/Reservas" />
                 <NavBarItem name="Consultas/Informes" path="/" /> 
@@ -61,20 +63,21 @@ const App = () => {
         if(usuarioLogueado.roles.includes('ADM')){
           return (
             <div> 
-              <NavBarItemFolder icon="fa fa-usd" name="Productos">
+              <NavBarItemFolder icon={ faCartPlus } name="Productos">
                 <NavBarItem name="Inventarios" path="/Inventarios" />
-                <NavBarItem name="Ajustes" path="/" /> 
+                <NavBarItem name="Ajustes" path="/Ajustes" /> 
                 <NavBarItem name="Consultas/Informes" path="/" /> 
               </NavBarItemFolder>
-              <NavBarItemFolder icon="fa fa-usd" name="Entrada">
+              <NavBarItemFolder icon={ faArrowAltCircleRight } name="Entrada">
                 <NavBarItem name="Proveedores" path="/Proveedores" />
                 <NavBarItem name="Compras" path="/Compras" />                        
                 <NavBarItem name="Consultas/Informes" path="/" />                        
               </NavBarItemFolder>
-              <NavBarItemFolder icon="fa fa-cog" name="Configuracion">
+              <NavBarItemFolder icon={ faCogs } name="Configuracion">
                 <NavBarItem name="Clientes" path="/Clientes" />
                 <NavBarItem name="Usuarios" path="/Usuarios" />
                 <NavBarItem name="Canchas" path="/Canchas" />                        
+                <NavBarItem name="Categorias" path="/Categorias" />   
               </NavBarItemFolder>    
             </div> 
           )
@@ -101,18 +104,19 @@ const App = () => {
               <Route path="/Inventarios" exact component={InventarioList} />
               <Route path="/Clientes" exact component={ClientesList} />
               <Route path="/Proveedores" exact component={ProveedorList} />
+              <Route path="/Ajustes" exact component={AjustesList} />              
               <Route path="/Compras" exact component={ComprasList} />
+              <Route path="/categorias" exact component={CategoriasList} />              
             </div>
           )
         }
       }
-      const noDisplayMenu = !window.location.pathname.includes("/Factura/Impresion/");
-      
+      const displayMenu = !window.location.pathname.includes("/Factura/Impresion/");      
       return (
           <div id="container"> 
               <div className="body-wrapper container-fluid p-0">
                   <Router>
-                      { noDisplayMenu &&
+                      { displayMenu &&
                         <div>
                           <NavbarTop>
                             <NavbarTopItem id="account" icon={faUser} > {usuarioLogueado.name}</NavbarTopItem>

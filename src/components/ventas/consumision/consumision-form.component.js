@@ -20,49 +20,43 @@ export default class ConsumisionForm extends Component{
             productoOptions: [],
             user_created: usuarioLogueado.name,
             user_updated: usuarioLogueado.name,            
-            textButton:'Crear',
-            titleForm: 'Crear Consumision',
+            textButton:'Nueva',
+            titleForm: 'Nueva Consumision',
             idUpdate: 'NEW',
+            consumision: {},
             reserva: this.props.reserva
         };        
     }
-    //Metodo que obtiene cualquier actualizacion de otros componentes donde fue llamado
+    
     componentDidUpdate(){    
         //Obteniendo dados de la reserva
         if(this.state.reserva._id !== this.props.reserva._id){
             //Obtener Productos
             this.getProductosOptions();
             this.setState({reserva: this.props.reserva})
-        }
-
-        //Obteniendo datos de la consumision para editar o crear
-        if(this.state.idUpdate !== this.props.idUpdate ){
-            this.setState({ idUpdate: this.props.idUpdate});
-            if(this.props.idUpdate !== "NEW" && this.props.idUpdate !== "" ){
-                axios.get(configData.serverUrl + "/consumisiones/"+this.props.idUpdate)
-                .then(response => {
-                    const consumision = response.data;
-                    this.setState({
-                        precioUnitario: consumision.precio_unitario,
-                        precioTotal: consumision.precio_total,
-                        cantidad: consumision.cantidad,
-                        productoSelected: {value:'',label: consumision.producto.descripcion},
-                        codigo: response.data.codigo,
-                        textButton:'Editar',
-                        titleForm: 'Editar Consumision' 
-                    })
-                })
-                .catch(err => console.log(err));
-            }else{
+        }       
+                
+        if(this.props.consumision && this.state.consumision._id !== this.props.consumision._id){
+            this.setState({
+                consumision: this.props.consumision,
+                precioUnitario: this.props.consumision.precio_unitario,
+                precioTotal: this.props.consumision.precio_total,
+                cantidad: this.props.consumision.cantidad,
+                pedidoPor: this.props.consumision.pedido_por,
+                productoSelected: this.state.productoOptions.filter(el => el.value._id === this.props.consumision.producto._id),
+                codigo: this.props.consumision.producto.codigo,
+                textButton:'Editar',
+                titleForm: 'Editar Consumision' 
+            })
+        }else{            
+            console.log('Crear Consumision',this.state.consumision._id)
+            if(!this.props.consumision && this.state.consumision._id){
+                console.log('Crear Consumision')
                 this.setState({
-                    precioUnitario: (this.state.productoOptions[0] && this.state.productoOptions[0].value.precio_venta),
-                    precioTotal: '',
-                    cantidad: '',
-                    productoSelected: this.state.productoOptions[0],
-                    textButton:'Crear',
-                    titleForm: 'Crear Consumision',
-                    idUpdate: this.props.idUpdate
-                });
+                    consumision: {},
+                    textButton:'Nueva',
+                    titleForm: 'Nueva Consumision',
+                })
             }
         }
     }
@@ -88,6 +82,8 @@ export default class ConsumisionForm extends Component{
     componentDidMount(){
         //Obtener Productos
         this.getProductosOptions();
+
+        
     }
     onChangeProducto = (selectedOption) => {
         let precioUnitario = (selectedOption.value.precio_venta !== undefined ? selectedOption.value.precio_venta : '0');
@@ -95,6 +91,7 @@ export default class ConsumisionForm extends Component{
             productoSelected: selectedOption,
             precioUnitario: precioUnitario,
             precioTotal: parseInt(precioUnitario.replace(/\./gi,'')) * this.state.cantidad
+            //precioTotal: parseInt(precioUnitario.replace(/\./gi,'')) * this.state.cantidad
         })
     }
     onChangePedidoPor = (e) => {this.setState({pedidoPor: e.target.value})}
@@ -132,11 +129,12 @@ export default class ConsumisionForm extends Component{
     
     onSubtmit = (e) => {
         e.preventDefault();
-        if(this.props.idUpdate === "NEW" || this.props.idUpdate === "" ){
+        if(!this.state.consumision._id){
             const consumision = {
                 reserva: this.state.reserva._id,
                 producto: this.state.productoSelected.value._id,
                 cantidad: this.state.cantidad,
+                pedido_por: this.state.pedidoPor,
                 precio_unitario: this.state.precioUnitario,
                 precio_total: convertMiles(this.state.precioTotal),
                 user_created: this.state.user_created,
@@ -157,14 +155,14 @@ export default class ConsumisionForm extends Component{
         }else{
             const consumision = {
                 cantidad: this.state.cantidad,
+                pedido_por: this.state.pedidoPor,
                 precio_total: convertMiles(this.state.precioTotal),
                 user_updated: this.state.user_updated
             }
-            axios.post(configData.serverUrl + '/consumisiones/update/'+this.state.idUpdate,consumision)
+            axios.post(configData.serverUrl + '/consumisiones/update/'+this.state.consumision._id,consumision)
                 .then(res => this.showNotification(res))
                 .catch(err => this.showNotification(err));
-        }
-        
+        }        
     }   
     
     render(){  

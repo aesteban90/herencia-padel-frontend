@@ -62,12 +62,9 @@ export default class FacturaImpresion extends Component{
             )
             table.push(
                 <tr key='liquidacion'>
-                    <th>IVA 5%</th>
-                    <td>{convertMiles(this.state.factura.total_iva5)}</td>
-                    <th>IVA 10%</th>
-                    <td>{convertMiles(this.state.factura.total_iva10)}</td>
-                    <th>Total IVA</th>
-                    <td>{convertMiles(this.state.factura.total_iva)}</td>
+                    <td colSpan='2'><b>IVA 5%:</b> {convertMiles(this.state.factura.total_iva5)}</td>
+                    <td colSpan='2'><b>IVA 10%:</b> {convertMiles(this.state.factura.total_iva10)}</td>
+                    <td colSpan='2'><b>Total IVA:</b> {convertMiles(this.state.factura.total_iva)}</td>
                 </tr>
             )
             return table

@@ -109,7 +109,7 @@ export default class PagosList extends Component{
                         </div>
                         {!dato.factura ?
                             <div className="col-md-2 text-right">
-                                <button onClick={() => this.updateData(dato)} type="button" className="btn btn-light btn-sm mr-1"><FontAwesomeIcon icon={faEdit} /></button>
+                                {/* <button onClick={() => this.updateData(dato)} type="button" className="btn btn-light btn-sm mr-1"><FontAwesomeIcon icon={faEdit} /></button> */}
                                 <button onClick={() => this.deleteData(dato)} type="button" className="btn btn-danger btn-sm"><FontAwesomeIcon icon={faTrash} /></button>
                                 
                                     <div>
@@ -128,7 +128,7 @@ export default class PagosList extends Component{
     render(){       
         return(           
             <div className="row">
-                <div className="col-md-8">
+                <div className="col-md-12">
                     <div className="card">
                         <div className="card-header">
                             <div className="card-title row mb-0">  
@@ -159,7 +159,7 @@ export default class PagosList extends Component{
                         </ul>                     
                     </div>
                 </div>
-                <div className="col-md-4">
+                <div className="col-md-4 d-none">
                     <PagosForm statePagoslist={this.state} reserva={this.state.reserva} idUpdate={this.state.idUpdate} onUpdateParentList={this.updateList}/>
                 </div>
             </div>            

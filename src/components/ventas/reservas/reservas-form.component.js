@@ -4,6 +4,7 @@ import NumberFormat from 'react-number-format';
 import DatePicker from 'react-datepicker';
 import MaskedInput from 'react-maskedinput';
 import moment from 'moment';
+import Select from 'react-select';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import '../../../utils/registerLocaleEsp';
@@ -18,33 +19,59 @@ export default class ReservasForm extends Component{
         this.state = {  
             user_created: usuarioLogueado.name,
             user_updated: usuarioLogueado.name,
+            categoriaOptions: [],
+            categoriaSelected: {},
             cancha: {id:'', title:''},
             monto:'', 
             reservadoPor: '',
             telefono:'',
             horasDisponibles: [7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24],
-            fechaReserva: ''
+            fechaReserva: new Date()
         };        
     }
     getData = async () => {
-        if((this.props.id && this.state.cancha._id !== this.props.id) || this.props.fechaReserva !== this.state.fechaReserva ){
-           await axios.get(configData.serverUrl + "/canchas/"+this.props.id)
-                .then(response => {
-                    this.setState({
-                        cancha: response.data,
-                        fechaReserva: this.props.fechaReserva
-                    })
-                })
-                .catch(err => console.log(err));
+        //Si existe la reserva
+        if(this.props.reserva && this.props.reserva.cancha._id !== this.state.cancha._id){   
+            let fecha = new Date(this.props.reserva.fecha_date)
+            this.setState({
+                cancha: this.props.reserva.cancha,
+                fechaReserva: fecha
+            })
 
             this.initFields();
+            
+        }else{
+            if(!this.props.reserva){
+                if((this.props.id && this.state.cancha._id !== this.props.id) || this.props.fechaReserva !== this.state.fechaReserva){
+                    await axios.get(configData.serverUrl + "/canchas/"+this.props.id)
+                        .then(response => {
+                            this.setState({
+                                cancha: response.data,
+                                fechaReserva: this.props.fechaReserva
+                            })
+                        })
+                        .catch(err => console.log(err));
+
+                        this.initFields();
+                    
+                }
+            }
         }
     }
 
     //Metodo que se ejecuta antes del render
-    componentDidMount(){this.getData()}
+    componentDidMount(){
+        this.getData()
+        this.setState({
+            categoriaSelected: {value:'diurno', label: 'Diurno'},
+            categoriaOptions: [
+                {value:'diurno', label: 'Diurno'},
+                {value:'nocturno', label: 'Nocturno'},
+                {value:'clase', label: 'Clase'}
+            ]
+        })
+    }
     componentDidUpdate(){this.getData()}
-
     onChangeReservadoPor = (e) => {this.setState({reservadoPor: e.target.value})}
     onChangeFechaReserva = (date) => {this.setState({fechaReserva: date})}  
     onChangeTelefono = (e) => {this.setState({telefono: e.target.value})}
@@ -91,15 +118,16 @@ export default class ReservasForm extends Component{
         let horas = [];
         let precioHora = parseInt(this.state.cancha.precioHora.replace(/\./gi,''));
         document.querySelectorAll("[type='checkbox']:checked").forEach((item) => {horas.push(item.value)})
-        let fecha = moment(this.state.fechaReserva).format('DD/MM/YYYY');
+        let fecha_string = moment(this.state.fechaReserva).format('DD/MM/YYYY');
 
         const reserva = {
             cancha: this.state.cancha._id,
             reservado_por: this.state.reservadoPor,
             telefono: this.state.telefono,
-            reserva_fecha: fecha,
-            reserva_horas: horas, 
-            reserva_hora_inicial: horas[0],
+            fecha_string,
+            fecha_date: this.state.fechaReserva,
+            horas: horas, 
+            hora_inicial: horas[0],
             estado: 'Reservado',
             total_monto: convertMiles(precioHora * horas.length),
             user_created: this.state.user_created,
@@ -112,6 +140,7 @@ export default class ReservasForm extends Component{
                 const consumision = {
                     reserva: reservanew._id,
                     cancha: this.state.cancha._id,
+                    pedido_por: reservanew.reservado_por,
                     cantidad: 1,
                     precio_unitario: reservanew.total_monto,
                     precio_total: reservanew.total_monto,
@@ -178,7 +207,14 @@ export default class ReservasForm extends Component{
                                     onChange={this.onChangeReservadoPor}
                                 />
                             </div> 
-                            
+                            <div className="form-group col-md-12">
+                                <label>Categoria: </label>
+                                <Select         
+                                    value={this.state.categoriaSelected} 
+                                    options={this.state.categoriaOptions} 
+                                    onChange={this.onChangeCategoria}                                    
+                                    required/>
+                            </div>
                             <div className="form-group col-md-12 hours-selected-container">
                                 <label>Horas: </label>
                                 {this.state.horasDisponibles.map(element => {

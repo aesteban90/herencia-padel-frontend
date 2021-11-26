@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import ComprasForm from './compras-form.component';
 import Spinner from 'react-bootstrap/Spinner';
+import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faEdit, faTrash, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 const configuracion = require('../../../config.json');
@@ -50,8 +51,16 @@ export default class ComprasList extends Component{
             return (
                 <li className="list-group-item" key={dato._id}>
                     <div className="col-md-2">{dato.numerofactura}</div>
-                    <div className="col-md-4">{dato.inventario ? dato.inventario.descripcion : 'Inventario Eliminado'}</div>
-                    <div className="col-md-2">{dato.proveedor.razonsocial}</div>
+                    <div className="col-md-4">{dato.inventario ? dato.inventario.descripcion : 'Inventario Eliminado'}
+                        <br />
+                        <div style={{color:'#918C8C',fontSize:'12px'}}>
+                            <b>Comprado el: </b>{ moment(dato.fecha_compra).format("DD-MM-YYYY")}
+                        </div>
+                    </div>
+                    <div className="col-md-2">
+                        {dato.proveedor.razonsocial}
+                        
+                    </div>
                     <div className="col-md-3 details-consumision ">
                         Cantidad: <span>{dato.cantidad}</span><br/>
                         Costo: <span>Gs. {dato.costo}</span><br/>
