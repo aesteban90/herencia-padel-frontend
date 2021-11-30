@@ -126,7 +126,7 @@ export default class ReservasForm extends Component{
     onSubtmit = (e) => {
         e.preventDefault();
         let horas = [];
-        let precioHora = parseInt(this.state.cancha.precioHora.replace(/\./gi,''));
+        let precioHora = parseInt(this.state.categoriaSelected.value.precio.replace(/\./gi,''));
         document.querySelectorAll("[type='checkbox']:checked").forEach((item) => {horas.push(item.value)})
         let fecha_string = moment(this.state.fechaReserva).format('DD/MM/YYYY');
 
