@@ -54,8 +54,8 @@ export default class CanchasList extends Component{
                     <div className="col-md-2">{dato.codigo}</div>
                     <div className="col-md-8">{dato.descripcion}<br/>
                         <span className="details-user-actions">
-                            <b> Precio por Hora: </b>{dato.precioHora}
-                            <br/>
+                            {/* <b> Precio por Hora: </b>{dato.precioHora} */}
+                            {/* <br/> */}
                             <b> Creado por: </b>{dato.user_created}
                             <b> Actualidado por: </b>{dato.user_updated}
                         </span>

@@ -128,7 +128,7 @@ export default class CanchasForm extends Component{
                                     onChange={this.onChangeCodigo}
                                 />
                             </div>      
-                            <div className="form-group col-md-6">
+                            {/* <div className="form-group col-md-6">
                                 <label>Precio por Hora: </label>
                                 <NumberFormat 
                                     thousandSeparator = "."
@@ -138,7 +138,7 @@ export default class CanchasForm extends Component{
                                     onChange={this.onChangePrecioHora}
                                     required
                                 />
-                            </div>                          
+                            </div> */}                          
                             <div className="form-group col-md-12">
                                 <label>Descripcion: </label>
                                 <input type="text" 
