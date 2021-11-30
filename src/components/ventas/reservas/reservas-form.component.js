@@ -51,9 +51,23 @@ export default class ReservasForm extends Component{
                             })
                         })
                         .catch(err => console.log(err));
-
-                        this.initFields();
                     
+                    //Obteniendo categorias
+                    let options = [];
+                    await axios.get(configData.serverUrl + "/categorias")
+                        .then(response => {
+                            response.data.forEach(element => {
+                                options.push({value:element,label:element.descripcion});
+                            });
+                        })
+                        .catch(err => console.log(err));
+                        this.setState({
+                            categoriaSelected: options[0],
+                            categoriaOptions: options            
+                        });
+
+                    //Inicializando fields
+                    this.initFields();
                 }
             }
         }
@@ -62,6 +76,7 @@ export default class ReservasForm extends Component{
     //Metodo que se ejecuta antes del render
     componentDidMount(){
         this.getData()
+        /*
         this.setState({
             categoriaSelected: {value:'diurno', label: 'Diurno'},
             categoriaOptions: [
@@ -70,8 +85,12 @@ export default class ReservasForm extends Component{
                 {value:'clase', label: 'Clase'}
             ]
         })
+        */
     }
     componentDidUpdate(){this.getData()}
+    onChangeCategoria = (element) => {
+        console.log(element); this.setState({categoriaSelected: element}, () => this.calcularMonto())
+    }
     onChangeReservadoPor = (e) => {this.setState({reservadoPor: e.target.value})}
     onChangeFechaReserva = (date) => {this.setState({fechaReserva: date})}  
     onChangeTelefono = (e) => {this.setState({telefono: e.target.value})}
@@ -98,7 +117,8 @@ export default class ReservasForm extends Component{
     
     calcularMonto = () => {
         let horas = [];
-        let precioHora = parseInt(this.state.cancha.precioHora.replace(/\./gi,''));
+        //let precioHora = parseInt(this.state.cancha.precioHora.replace(/\./gi,''));
+        let precioHora = parseInt(this.state.categoriaSelected.value.precio.replace(/\./gi,''));
         document.querySelectorAll("[type='checkbox']:checked").forEach((item) => {horas.push(item.value)})
         let monto = precioHora * horas.length;
         this.setState({monto});
@@ -207,14 +227,7 @@ export default class ReservasForm extends Component{
                                     onChange={this.onChangeReservadoPor}
                                 />
                             </div> 
-                            <div className="form-group col-md-12">
-                                <label>Categoria: </label>
-                                <Select         
-                                    value={this.state.categoriaSelected} 
-                                    options={this.state.categoriaOptions} 
-                                    onChange={this.onChangeCategoria}                                    
-                                    required/>
-                            </div>
+                           
                             <div className="form-group col-md-12 hours-selected-container">
                                 <label>Horas: </label>
                                 {this.state.horasDisponibles.map(element => {
@@ -226,7 +239,15 @@ export default class ReservasForm extends Component{
                                         )
                                 })}
                                 
-                            </div>                            
+                            </div>    
+                            <div className="form-group col-md-12">
+                                <label>Categoria: </label>
+                                <Select   
+                                    value={this.state.categoriaSelected} 
+                                    options={this.state.categoriaOptions} 
+                                    onChange={this.onChangeCategoria}                                    
+                                    required/>
+                            </div>                        
                             <div className="form-group col-md-6">
                                 <label>Monto: </label>
                                 <NumberFormat 
