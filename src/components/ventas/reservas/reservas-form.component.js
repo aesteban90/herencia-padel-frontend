@@ -75,17 +75,7 @@ export default class ReservasForm extends Component{
 
     //Metodo que se ejecuta antes del render
     componentDidMount(){
-        this.getData()
-        /*
-        this.setState({
-            categoriaSelected: {value:'diurno', label: 'Diurno'},
-            categoriaOptions: [
-                {value:'diurno', label: 'Diurno'},
-                {value:'nocturno', label: 'Nocturno'},
-                {value:'clase', label: 'Clase'}
-            ]
-        })
-        */
+        this.getData();
     }
     componentDidUpdate(){this.getData()}
     onChangeCategoria = (element) => {
