@@ -18,7 +18,7 @@ export default class ReservasList extends Component{
             reservas: [],
             loadingDet: true,
             idUpdate: '',
-            horasDisponibles: [7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24],
+            horasDisponibles: configuracion.horasDisponibles,
             fechaReserva: new Date(),
             didUpdate: true
         }
@@ -37,17 +37,15 @@ export default class ReservasList extends Component{
                 this.setState({
                     datos: response.data,
                     id: response.data[0]._id
-                })  
-                
+                })                  
             })
             .catch(err => console.log(err))
     }
     reservasList = async () => {
         let fecha = moment(this.state.fechaReserva).format('DD/MM/YYYY');
-        //let fecha = new Date();
         await axios.post(configuracion.serverUrl + "/reservas/fecha",{fechaReserva: fecha})
             .then(response => {
-                console.log()
+                console.log('data',response.data)
                 this.setState({
                     reservas: response.data,
                     loadingDet: false
@@ -61,6 +59,7 @@ export default class ReservasList extends Component{
     createData = (jsondatos) => this.setState({id:jsondatos._id})
     reservaDetails = (jsondatos) => {window.location.href = "/Reservas/Details/"+jsondatos._id}
     dataListReservas = (jsondatos) => {
+        
         return this.state.reservas.map(reserva => {
             if(jsondatos._id === reserva.cancha){
                 let saldoNegativo = (reserva.total_saldo && reserva.total_saldo.indexOf('-')>-1 ? {color:'red',fontWeight:'bold'} : undefined)
@@ -68,12 +67,13 @@ export default class ReservasList extends Component{
                     <li className="list-group-item" key={reserva._id}>
                         <div className="col-md-4">
                             <b>Reservado por: </b>{reserva.reservado_por}<br/>
-                            <b>Reservado: </b>{reserva.fecha}<br/>
+                            <b>Categoria: </b>{reserva.categoria}<br/>
                             <div className="hours-selected-container">
                                 <b>Horas:</b> 
                                 {reserva.horas.map(element => {
+                                    document.querySelector('.hd-'+jsondatos._id+'-'+element).classList.add('no-disponible')
                                     return (
-                                        <div key={element} className="hours-selected-item-info" >
+                                        <div key={element} className="hours-selected-item-info no-disponible" >
                                             <span> {`${element}hs`} </span>
                                         </div>
                                     )
@@ -101,14 +101,19 @@ export default class ReservasList extends Component{
     datalist(){
         return this.state.datos.map(dato => {
             return (
-                <li className="list-group-item" key={dato._id}>
-                    
+                <li className="list-group-item" key={dato._id}>                    
                         <div className="col-md-10"><b>{dato.descripcion}</b><br/>
                             <span className="details-user-actions">
-                                <b> Precio por Hora: </b>{dato.precioHora} Gs.
-                            </span><br/>
-                            <span className="details-user-actions">
-                                <b> Horarios Disponibles: </b>
+                                <b> Horarios Disponibles: </b><br/>
+                                <div className={`hours-selected-container c-${dato._id}`}>                                   
+                                    {this.state.horasDisponibles.map(element => {
+                                        return (
+                                            <div key={element} className={`hours-selected-item-info disponible hd-${dato._id}-${element}`} >
+                                                <span> {`${element}hs`} </span>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
                             </span> 
                         </div>
                         <div className="col-md-2 text-right">

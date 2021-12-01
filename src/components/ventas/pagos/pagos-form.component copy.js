@@ -38,7 +38,7 @@ export default class PagosForm extends Component{
             this.setState({reserva: this.props.reserva})
         }
 
-        //Obteniendo datos de la consumision para editar o crear
+        //Obteniendo datos de los pagos para editar o crear
         if(this.state.idUpdate !== this.props.idUpdate ){            
             this.setState({ idUpdate: this.props.idUpdate});
             if(this.props.idUpdate !== "NEW" && this.props.idUpdate !== "" ){

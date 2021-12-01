@@ -40,18 +40,17 @@ export default class ConsumisionForm extends Component{
             this.setState({
                 consumision: this.props.consumision,
                 precioUnitario: this.props.consumision.precio_unitario,
-                precioTotal: this.props.consumision.precio_total,
+                precioTotal: parseInt(this.props.consumision.precio_total.replace(/\./gi,'')),
                 cantidad: this.props.consumision.cantidad,
                 pedidoPor: this.props.consumision.pedido_por,
                 productoSelected: this.state.productoOptions.filter(el => el.value._id === this.props.consumision.producto._id),
                 codigo: this.props.consumision.producto.codigo,
                 textButton:'Editar',
                 titleForm: 'Editar Consumision' 
-            })
+            })            
         }else{            
-            console.log('Crear Consumision',this.state.consumision._id)
             if(!this.props.consumision && this.state.consumision._id){
-                console.log('Crear Consumision')
+                
                 this.setState({
                     consumision: {},
                     textButton:'Nueva',

@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import axios from 'axios';
 import PagosForm from './pagos-form.component';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faEdit, faTrash, faCheckSquare } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faTrash, faCheckSquare } from '@fortawesome/free-solid-svg-icons';
 import Spinner from 'react-bootstrap/Spinner';
 const configuracion = require('../../../config.json');
 
@@ -70,6 +70,9 @@ export default class PagosList extends Component{
     checked = () => {
         document.querySelector('.btn-seleccionar').setAttribute('style','border:1px solid black; color: black')
     }
+    eliminarTodos = () => {
+
+    }
     seleccionarTodos = () => {
         // let checks = document.querySelectorAll('#facturacheck').length;
         // let checks_checked = document.querySelectorAll('#facturacheck:checked').length;
@@ -91,6 +94,7 @@ export default class PagosList extends Component{
     datalist(){
         if(this.state.datos){
             return this.state.datos.map(dato => {
+                console.log('pagos',dato)
                 return (
                     <li className="list-group-item" key={dato._id}>
                         <div className="col-md-6">
@@ -111,7 +115,6 @@ export default class PagosList extends Component{
                             <div className="col-md-2 text-right">
                                 {/* <button onClick={() => this.updateData(dato)} type="button" className="btn btn-light btn-sm mr-1"><FontAwesomeIcon icon={faEdit} /></button> */}
                                 <button onClick={() => this.deleteData(dato)} type="button" className="btn btn-danger btn-sm"><FontAwesomeIcon icon={faTrash} /></button>
-                                
                                     <div>
                                         <input className="form-check-input m2" id="facturacheck" onClick={() => this.checked()} name="facturacheck" type="checkbox" value={dato._id} ></input>Facturar
                                     </div>                            
@@ -134,8 +137,9 @@ export default class PagosList extends Component{
                             <div className="card-title row mb-0">  
                                 <div className="col-md-8">Detalles de los Pagos</div>
                                 <div className="col-md-4 text-right">
-                                <button onClick={() => this.seleccionarTodos()} type="button" className="btn-seleccionar btn btn-light btn-sm mr-2"><FontAwesomeIcon icon={faCheckSquare} /> Seleccionar Todos</button>
-                                    <button onClick={() => this.createData("NEW")} type="button" className="btn btn-warning btn-sm"><FontAwesomeIcon icon={faPlus} /> Nuevo</button>
+                                    <button onClick={() => this.eliminarTodos()} type="button" className="btn btn-danger btn-sm mr-2"><FontAwesomeIcon icon={faTrash} /> Eliminar Todos</button>
+                                    <button onClick={() => this.seleccionarTodos()} type="button" className="btn-seleccionar btn btn-light btn-sm mr-2"><FontAwesomeIcon icon={faCheckSquare} /> Seleccionar Todos</button>
+                                    {/* <button onClick={() => this.createData("NEW")} type="button" className="btn btn-warning btn-sm"><FontAwesomeIcon icon={faPlus} /> Nuevo</button> */}
                                 </div>                                 
                             </div>
                         </div>

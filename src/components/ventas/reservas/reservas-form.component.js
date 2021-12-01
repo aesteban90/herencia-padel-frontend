@@ -25,7 +25,7 @@ export default class ReservasForm extends Component{
             monto:'', 
             reservadoPor: '',
             telefono:'',
-            horasDisponibles: [7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24],
+            horasDisponibles: configData.horasDisponibles,
             fechaReserva: new Date()
         };        
     }
@@ -37,7 +37,6 @@ export default class ReservasForm extends Component{
                 cancha: this.props.reserva.cancha,
                 fechaReserva: fecha
             })
-
             this.initFields();
             
         }else{
@@ -57,7 +56,7 @@ export default class ReservasForm extends Component{
                     await axios.get(configData.serverUrl + "/categorias")
                         .then(response => {
                             response.data.forEach(element => {
-                                options.push({value:element,label:element.descripcion});
+                                options.push({value:element,label:element.descripcion + " | "+ element.precio });
                             });
                         })
                         .catch(err => console.log(err));
@@ -79,7 +78,7 @@ export default class ReservasForm extends Component{
     }
     componentDidUpdate(){this.getData()}
     onChangeCategoria = (element) => {
-        console.log(element); this.setState({categoriaSelected: element}, () => this.calcularMonto())
+        this.setState({categoriaSelected: element}, () => this.calcularMonto())
     }
     onChangeReservadoPor = (e) => {this.setState({reservadoPor: e.target.value})}
     onChangeFechaReserva = (date) => {this.setState({fechaReserva: date})}  
@@ -121,7 +120,16 @@ export default class ReservasForm extends Component{
 
     initFields = () =>{ 
         document.querySelectorAll("[type='checkbox']")[0].setAttribute('required','');
-        document.querySelectorAll("[type='checkbox']:checked").forEach((item) => item.checked = false);        
+        document.querySelectorAll("[type='checkbox']:checked").forEach((item) => item.checked = false); 
+        
+        document.querySelectorAll('.c-'+this.state.cancha._id+' .no-disponible>span').forEach(element => {
+            //color: #c6c3c3
+            const hour = element.innerText.replace('hs','');
+            let input = document.querySelector('#check_'+hour);
+            input.setAttribute("disabled", "true");
+            input.setAttribute("style", "cursor:auto");
+            input.nextSibling.setAttribute("style", "color: #c6c3c3");
+        })
     }
     onSubtmit = (e) => {
         e.preventDefault();
@@ -133,6 +141,7 @@ export default class ReservasForm extends Component{
         const reserva = {
             cancha: this.state.cancha._id,
             reservado_por: this.state.reservadoPor,
+            categoria: this.state.categoriaSelected.value.descripcion,
             telefono: this.state.telefono,
             fecha_string,
             fecha_date: this.state.fechaReserva,

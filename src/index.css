@@ -65,19 +65,26 @@ body {
 }
 
 .hours-selected-item-info{
-  font-size: 12px;
-  width: 35px;
+  font-size: 11px;
+  width: 30px;
   height: 25px;
-  background: #303641;
   border: 1px solid;
   border-radius: 5px;
   text-align: center;
   padding: 1px 2px;
-  color: #fff;
   display: block;
   position: relative;
   margin: 1px;
 }
+.hours-selected-item-info.disponible{
+  background: none;
+  color: #000;
+}
+.hours-selected-item-info.no-disponible{
+  background: #303641;
+  color: #FFF;
+}
+
 
 .react-datepicker-popper{
   z-index: 2;

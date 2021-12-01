@@ -5,7 +5,6 @@ import NumberFormat from 'react-number-format';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { usuarioLogueado } from '../../../App';
-import { parse } from '@fortawesome/fontawesome-svg-core';
 const configData = require('../../../config.json');
 const { convertMiles } = require('../../../utils/utils')
 
@@ -31,6 +30,7 @@ export default class PagosForm extends Component{
     }
     componentDidMount(){
         this.obtenerDatosConsumicion();
+
     }
     componentDidUpdate(){    
         this.obtenerDatosConsumicion();
@@ -46,13 +46,12 @@ export default class PagosForm extends Component{
                 const descripcion = (this.props.consumision.producto ? this.props.consumision.producto.descripcion : this.props.consumision.cancha.descripcion);
                 this.setState({
                     precioUnitario: this.props.consumision.precio_unitario,
-                    precioTotal: this.props.consumision.precio_total,
+                    precioTotal: parseInt(this.props.consumision.precio_total.replace(/\./gi,'')),
                     pedido_por: this.props.consumision.pedido_por,
-                    cantidad: this.props.consumision.cantidad,
-                    
+                    cantidad: this.props.consumision.cantidad,                    
                     descripcion,    
                     consumision: this.props.consumision
-                })
+                }, () => this.controlarBotones())
             }
         }
     }
@@ -108,7 +107,6 @@ export default class PagosForm extends Component{
     
     onSubtmit = (e) => {
         e.preventDefault();
-        console.log('Precio total',this.state.precioTotal);
         let saldo = parseInt(this.state.saldo.replace(/\./gi,''))*-1;
         let precioTotal = parseInt((this.state.precioTotal+"").replace(/\./gi,''));
 
@@ -120,7 +118,7 @@ export default class PagosForm extends Component{
             }
             return false;
         }
-
+        
         const pagos = {
             reserva: this.props.reserva._id,
             consumision: this.state.consumision._id,
@@ -133,7 +131,6 @@ export default class PagosForm extends Component{
             user_created: this.state.user_created,
             user_updated: this.state.user_updated
         }
-        
         axios.post(configData.serverUrl + '/pagos/add',pagos)
             .then(res => this.showNotification(true))
             .catch(err => this.showNotification(false));                    
@@ -168,6 +165,7 @@ export default class PagosForm extends Component{
                             <div className="form-group col-md-12">
                                 <label>Pagado Por: </label>
                                 <input type="text" 
+                                    autoFocus={true}
                                     ref={c => (this._input = c)}
                                     required
                                     className="form-control"
