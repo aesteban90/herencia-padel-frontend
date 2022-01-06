@@ -16,6 +16,7 @@ export default class ReservasList extends Component{
         this.state = {
             datos: [],
             reservas: [],
+            reserva: undefined,
             loadingDet: true,
             idUpdate: '',
             horasDisponibles: configuracion.horasDisponibles,
@@ -30,6 +31,7 @@ export default class ReservasList extends Component{
         this.canchasList();
         //Obteniendo la lista de Reservas por fecha
         this.reservasList();
+
     }
     canchasList = async () => {
         await axios.get(configuracion.serverUrl + "/canchas")
@@ -45,7 +47,6 @@ export default class ReservasList extends Component{
         let fecha = moment(this.state.fechaReserva).format('DD/MM/YYYY');
         await axios.post(configuracion.serverUrl + "/reservas/fecha",{fechaReserva: fecha})
             .then(response => {
-                console.log('data',response.data)
                 this.setState({
                     reservas: response.data,
                     loadingDet: false
@@ -53,15 +54,16 @@ export default class ReservasList extends Component{
             })
             .catch(err => console.log(err))
     }
-
+   
     componentDidMount(){this.updateList();}
     onChangeFechaReserva = (date) => {this.setState({fechaReserva: date}, () => this.reservasList())}    
-    createData = (jsondatos) => this.setState({id:jsondatos._id})
-    reservaDetails = (jsondatos) => {window.location.href = "/Reservas/Details/"+jsondatos._id}
-    dataListReservas = (jsondatos) => {
-        
+    createData = (jsondatos) => this.setState({id:jsondatos._id, reserva: undefined})
+    reservaDetails = (jsondatos) => {window.location.href = "/Reservas/Details/"+jsondatos._id};
+    updateReserva =  (reserva) => this.setState({reserva});
+
+    dataListReservas = (jsondatos) => {    
         return this.state.reservas.map(reserva => {
-            if(jsondatos._id === reserva.cancha){
+            if(jsondatos._id === reserva.cancha._id){
                 let saldoNegativo = (reserva.total_saldo && reserva.total_saldo.indexOf('-')>-1 ? {color:'red',fontWeight:'bold'} : undefined)
                 return(
                     <li className="list-group-item" key={reserva._id}>
@@ -72,6 +74,7 @@ export default class ReservasList extends Component{
                                 <b>Horas:</b> 
                                 {reserva.horas.map(element => {
                                     document.querySelector('.hd-'+jsondatos._id+'-'+element).classList.add('no-disponible')
+                                    console.log('List colocando no disponible',element)
                                     return (
                                         <div key={element} className="hours-selected-item-info no-disponible" >
                                             <span> {`${element}hs`} </span>
@@ -90,7 +93,14 @@ export default class ReservasList extends Component{
                             <b>Saldo:</b> <span style={saldoNegativo}>{reserva.total_saldo} Gs.</span>
                         </div>
                         <div className="col-md-2 text-right">
-                        <button onClick={() => this.reservaDetails(reserva)} type="button" className="btn btn-warning btn-sm mr-1"> Detalles</button>
+                            <button onClick={() => this.reservaDetails(reserva)} type="button" className="btn btn-success btn-sm mr-1"> Detalles</button>
+                            <button onClick={() => this.updateReserva(reserva)} type="button" className="btn btn-warning btn-sm mr-1"> Editar</button>
+                        </div>
+                        <div className="col-md-12">
+                            <span className="details-user-actions">
+                                <b> Creado por: </b>{reserva.user_created + ' el ' + moment(reserva.createdAt).format("DD-MM-YYYY HH:mm:ss")} <br/>
+                                <b> Actualizado por: </b>{reserva.user_updated + ' el ' + moment(reserva.updatedAt).format("DD-MM-YYYY HH:mm:ss")}                                 
+                            </span>                            
                         </div>
                     </li>
                 )
@@ -100,6 +110,9 @@ export default class ReservasList extends Component{
 
     datalist(){
         return this.state.datos.map(dato => {
+            //Limpiando las horas no disponibles de la lista por cancha
+            document.querySelectorAll(`.c-${dato._id}>.no-disponible`).forEach(item => item.classList.remove('no-disponible'));
+
             return (
                 <li className="list-group-item" key={dato._id}>                    
                         <div className="col-md-10"><b>{dato.descripcion}</b><br/>
@@ -180,7 +193,7 @@ export default class ReservasList extends Component{
                         {!this.state.id ? 
                             <Spinner animation="border" variant="primary" style={{margin:"25px"}}/> 
                         : 
-                            <ReservasForm id={this.state.id} fechaReserva={this.state.fechaReserva} onUpdateParentList={this.reservasList}/>
+                            <ReservasForm id={this.state.id} fechaReserva={this.state.fechaReserva} onUpdateParentList={this.reservasList} reserva={this.state.reserva}/>
                         }
                     </div>
                 </div>

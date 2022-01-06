@@ -35,7 +35,7 @@ export default class TabsDetallesVentas extends Component{
             total_saldo: this.state.det_total_saldo,
             user_updated: this.state.user_updated
         }
-        axios.post(configuracion.serverUrl + '/reservas/update/'+this.state.reserva._id,reserva)
+        axios.post(configuracion.serverUrl + '/reservas/update/totales/'+this.state.reserva._id,reserva)
             .then(res => console.log('Reserva - Totales Actualizados'))
             .catch(err => console.log('Reserva - Totales Con Error', err));
     }
